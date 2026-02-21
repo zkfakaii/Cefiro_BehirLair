@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cefiro - Crear personaje</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="crear-container">
+        <h1 class="logo">⚔️ CREAR PERSONAJE ⚔️</h1>
+        
+        <form id="form-crear" class="form-crear">
+            <!-- Nombre -->
+            <label for="nombre">Nombre del personaje</label>
+            <input type="text" id="nombre" placeholder="Ej: Paxo" required>
+
+            <!-- Raza -->
+            <label for="raza">Raza</label>
+            <select id="raza" required>
+                <option value="">Selecciona una raza</option>
+            </select>
+
+            <!-- Clase -->
+            <label for="clase">Clase</label>
+            <select id="clase" required>
+                <option value="">Selecciona una clase</option>
+            </select>
+            
+            <!-- Nivel -->
+            <label for="nivel_creacion">Nivel</label>
+            <input type="number" id="nivel_creacion" value="1" min="1" max="20" required>
+            
+            
+            <!-- Previsualización de PG -->
+            <label>Puntos de Golpe (estimados)</label>
+            <div id="pg_preview" class="pg-preview">0</div>
+            <select id="subclase">
+                <option value="">Selecciona una subclase</option>
+            </select>
+            <button type="button" id="btnCalcularPG" class="btn-accion">🎲 Tirar PG</button>
+            <!-- Background -->
+            <label for="background">Background</label>
+            <select id="background" required>
+                <option value="">Selecciona un background</option>
+            </select>
+
+            <!-- Stats (valores por defecto) -->
+            <h2>Características</h2>
+            <div class="stats-crear">
+                <div>
+                    <label>FUE</label>
+                    <input type="number" id="fue" value="10" min="1" max="30">
+                </div>
+                <div>
+                    <label>DES</label>
+                    <input type="number" id="des" value="10" min="1" max="30">
+                </div>
+                <div>
+                    <label>CON</label>
+                    <input type="number" id="con" value="10" min="1" max="30">
+                </div>
+                <div>
+                    <label>INT</label>
+                    <input type="number" id="int" value="10" min="1" max="30">
+                </div>
+                <div>
+                    <label>SAB</label>
+                    <input type="number" id="sab" value="10" min="1" max="30">
+                </div>
+                <div>
+                    <label>CAR</label>
+                    <input type="number" id="car" value="10" min="1" max="30">
+                </div>
+            </div>
+
+            <!-- Botones -->
+            <div class="acciones-crear">
+                <button type="submit" class="btn-primario">✨ Crear personaje</button>
+                <button type="button" class="btn-secundario" onclick="window.location.href='index.html'">↩️ Volver</button>
+            </div>
+        </form>
+    </div>
+
+    <script src="../core/personaje.js"></script>
+    <script src="../sistemas/dnd5e/data-loader.js"></script>
+    <script src="crear.js"></script>
+</body>
+</html>

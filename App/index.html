@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cefiro - Inicio</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="inicio-container">
+        <!-- TÍTULO DE LA APP -->
+        <h1 class="logo">⚔️ CEFIRO ⚔️</h1>
+        
+        <!-- BOTÓN PRINCIPAL: ENTRAR A FICHAS -->
+        <button id="btnEntrar" class="btn-entrar">📜 ENTRAR A FICHAS</button>
+        
+        <!-- CONTENEDOR QUE SE MUESTRA AL TOCAR EL BOTÓN -->
+        <div id="panelFichas" class="panel-fichas oculto">
+            <h2>Tus personajes</h2>
+            
+            <!-- Botones de acción -->
+            <div class="acciones">
+                <button id="btnNuevo" class="btn-accion" onclick="window.location.href='crear.html'">✨ Nuevo</button>
+                <button id="btnImportar" class="btn-accion">📂 Importar</button>
+            </div>
+            
+            <!-- Lista de personajes guardados -->
+            <div id="listaPersonajes" class="lista-personajes">
+                <!-- Aquí se cargarán dinámicamente -->
+                <p class="vacio">No hay personajes guardados</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="../core/personaje.js"></script>
+    <script src="../sistemas/dnd5e/adaptador-5ecompanion.js"></script>
+    <script src="../sistemas/dnd5e/data-loader.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

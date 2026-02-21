@@ -1,0 +1,556 @@
+/* ============================================
+   PANTALLA DE INICIO
+   ============================================ */
+   .inicio-container {
+    max-width: 500px;
+    margin: 20px auto;
+    padding: 20px;
+    text-align: center;
+    background-color: #2a2a3a;
+    border-radius: 30px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    border: 2px solid #6a4e9b;
+}
+
+.logo {
+    font-size: 3em;
+    color: #ffd700;
+    text-shadow: 4px 4px 0 #4a2e7a;
+    margin: 10px 0 30px;
+    letter-spacing: 4px;
+}
+
+.btn-entrar {
+    background: linear-gradient(135deg, #ffd700 0%, #b8860b 100%);
+    color: #1e1e2f;
+    border: none;
+    border-radius: 60px;
+    padding: 20px 40px;
+    font-size: 1.8em;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 8px 0 #7d5d0e;
+    transition: 0.1s;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.btn-entrar:active {
+    transform: translateY(8px);
+    box-shadow: 0 0 0 #7d5d0e;
+}
+
+.panel-fichas {
+    background-color: #1e1e2f;
+    border-radius: 20px;
+    padding: 20px;
+    margin-top: 20px;
+    border: 2px solid #4a2e7a;
+    transition: all 0.3s;
+}
+
+.panel-fichas.oculto {
+    display: none;
+}
+
+.panel-fichas h2 {
+    color: #ffd700;
+    margin-top: 0;
+    border-bottom: 2px solid #3a3a4a;
+    padding-bottom: 10px;
+}
+
+.acciones {
+    display: flex;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.btn-accion {
+    flex: 1;
+    background: linear-gradient(135deg, #6a4e9b 0%, #4a2e7a 100%);
+    color: white;
+    border: none;
+    border-radius: 40px;
+    padding: 15px;
+    font-size: 1.2em;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 0 #2a1e3a;
+    transition: 0.1s;
+}
+
+.btn-accion:active {
+    transform: translateY(4px);
+    box-shadow: 0 0 0 #2a1e3a;
+}
+
+.lista-personajes {
+    max-height: 300px;
+    overflow-y: auto;
+    margin-top: 15px;
+}
+
+.item-personaje {
+    background-color: #2a2a3a;
+    border-radius: 15px;
+    padding: 15px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid #4a2e7a;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.item-personaje:hover {
+    background-color: #3a3a4a;
+    transform: scale(1.02);
+}
+
+.item-personaje span {
+    color: white;
+    font-size: 1.2em;
+}
+
+.btn-eliminar {
+    background-color: #aa4e4e;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 1.2em;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 0 #5a2e2e;
+}
+
+.btn-eliminar:active {
+    transform: translateY(2px);
+    box-shadow: 0 0 0 #5a2e2e;
+}
+
+.vacio {
+    color: #888;
+    font-style: italic;
+    text-align: center;
+    padding: 20px;
+}
+ficha de cha
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #1a1a2e;
+    color: #e0e0e0;
+    padding: 15px;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.container {
+    max-width: 600px;
+    width: 100%;
+    background-color: #16213e;
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+    border: 1px solid #0f3460;
+}
+
+/* Cabecera */
+.header {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+    align-items: center;
+}
+
+.foto {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background-color: #0f3460;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    border: 3px solid #e94560;
+    overflow: hidden;
+}
+
+.foto-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.info {
+    flex: 1;
+}
+
+.nombre {
+    font-size: 1.8rem;
+    color: #e94560;
+    margin-bottom: 5px;
+    font-weight: 700;
+}
+
+.detalles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 12px;
+    font-size: 0.9rem;
+    background-color: #0f3460;
+    padding: 8px 12px;
+    border-radius: 30px;
+}
+
+.detalles span {
+    background-color: #1a1a2e;
+    padding: 4px 10px;
+    border-radius: 20px;
+    color: #e0e0e0;
+}
+
+/* Pestañas con radio buttons */
+.tabs {
+    margin-top: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    position: relative;
+}
+
+.tabs input[type="radio"] {
+    display: none;
+}
+
+.tabs label {
+    background-color: #0f3460;
+    color: #a0a0a0;
+    padding: 10px 15px;
+    margin-right: 5px;
+    margin-bottom: 5px;
+    border-radius: 30px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid transparent;
+    flex: 1 0 auto;
+    text-align: center;
+    min-width: 70px;
+}
+
+.tabs label:hover {
+    background-color: #1a1a2e;
+    color: #e0e0e0;
+    border-color: #e94560;
+}
+
+.tabs input[type="radio"]:checked + label {
+    background-color: #e94560;
+    color: white;
+    border-color: #e94560;
+}
+
+/* Contenido de las pestañas */
+.tab-content {
+    margin-top: 20px;
+    background-color: #0f3460;
+    border-radius: 20px;
+    padding: 20px;
+    width: 100%;
+}
+
+.tab-panel {
+    display: none;
+}
+
+#tab-principal:checked ~ .tab-content #content-principal,
+#tab-notas:checked ~ .tab-content #content-notas,
+#tab-rasgos:checked ~ .tab-content #content-rasgos,
+#tab-objetos:checked ~ .tab-content #content-objetos,
+#tab-ataques:checked ~ .tab-content #content-ataques,
+#tab-magia:checked ~ .tab-content #content-magia,
+#tab-trasfondo:checked ~ .tab-content #content-trasfondo {
+    display: block;
+}
+
+/* Estilos para cada panel */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.stat-item {
+    background-color: #1a1a2e;
+    padding: 10px;
+    border-radius: 12px;
+    text-align: center;
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    color: #a0a0a0;
+    display: block;
+}
+
+.stat-value {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #e94560;
+    display: inline-block;
+    margin-right: 5px;
+}
+
+.stat-mod {
+    font-size: 1rem;
+    color: #a0a0a0;
+}
+
+.hp-armor {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+.hp-box, .armor-box {
+    background-color: #1a1a2e;
+    padding: 10px 20px;
+    border-radius: 30px;
+    text-align: center;
+    min-width: 100px;
+}
+
+.hp-label, .armor-label {
+    font-size: 0.8rem;
+    color: #a0a0a0;
+    display: block;
+}
+
+.hp-value, .armor-value {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #e94560;
+}
+
+.skills-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.skill-item {
+    background-color: #1a1a2e;
+    padding: 6px 10px;
+    border-radius: 20px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.skill-name {
+    font-size: 0.85rem;
+}
+
+.skill-mod {
+    font-weight: bold;
+    color: #e94560;
+}
+
+/* Notas */
+textarea {
+    width: 100%;
+    height: 200px;
+    background-color: #1a1a2e;
+    border: 1px solid #0f3460;
+    border-radius: 12px;
+    color: #e0e0e0;
+    padding: 10px;
+    font-family: inherit;
+    resize: vertical;
+}
+
+/* Listas */
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+ul li {
+    background-color: #1a1a2e;
+    margin-bottom: 8px;
+    padding: 10px;
+    border-radius: 12px;
+    border-left: 4px solid #e94560;
+}
+
+/* Tabla de ataques */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    text-align: left;
+    padding: 10px;
+    background-color: #1a1a2e;
+}
+
+th {
+    background-color: #0f3460;
+    color: #e94560;
+    font-weight: 600;
+}
+
+td {
+    border-bottom: 1px solid #0f3460;
+}
+
+/* Sección de magia */
+.spell-section {
+    margin-bottom: 20px;
+}
+
+.spell-section h3 {
+    color: #e94560;
+    margin-bottom: 8px;
+    font-size: 1.1rem;
+}
+
+/* Trasfondo */
+#content-trasfondo p {
+    background-color: #1a1a2e;
+    padding: 10px;
+    border-radius: 12px;
+    margin-bottom: 10px;
+}
+
+#content-trasfondo strong {
+    color: #e94560;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .skills-list {
+        grid-template-columns: 1fr;
+    }
+    .detalles {
+        font-size: 0.8rem;
+    }
+    .nombre {
+        font-size: 1.5rem;
+    }
+}
+
+
+
+/* ============================================
+   PANTALLA DE CREACIÓN
+   ============================================ */
+   .crear-container {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #2a2a3a;
+    border-radius: 30px;
+    border: 2px solid #6a4e9b;
+}
+
+.form-crear {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.form-crear label {
+    color: #ffd700;
+    font-weight: bold;
+    margin-bottom: -10px;
+}
+
+.form-crear input,
+.form-crear select {
+    background-color: #1e1e2f;
+    color: #e0e0e0;
+    border: 1px solid #6a4e9b;
+    border-radius: 25px;
+    padding: 12px 15px;
+    font-size: 1em;
+}
+
+.stats-crear {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.stats-crear div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #1e1e2f;
+    border-radius: 15px;
+    padding: 10px;
+}
+
+.stats-crear label {
+    margin-bottom: 5px;
+    color: #b0b0ff;
+}
+
+.stats-crear input {
+    width: 80px;
+    text-align: center;
+}
+
+.acciones-crear {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.acciones-crear button {
+    flex: 1;
+    padding: 15px;
+    border: none;
+    border-radius: 50px;
+    font-size: 1.2em;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/* Previsualización de PG en pantalla de creación */
+.pg-preview {
+    background-color: #1e1e2f;
+    padding: 12px;
+    border-radius: 12px;
+    text-align: center;
+    font-size: 1.8em;
+    font-weight: bold;
+    color: #ffd700;
+    border: 2px solid #6a4e9b;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
