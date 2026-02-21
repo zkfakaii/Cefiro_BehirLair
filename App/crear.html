@@ -5,10 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cefiro - Crear personaje</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Almendra+SC&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="crear-container">
-        <h1 class="logo">⚔️ CREAR PERSONAJE ⚔️</h1>
+        <h1 class="logo">🔥 CREAR PERSONAJE 🔥</h1>
         
         <form id="form-crear" class="form-crear">
             <!-- Nombre -->
@@ -35,10 +38,11 @@
             <!-- Previsualización de PG -->
             <label>Puntos de Golpe (estimados)</label>
             <div id="pg_preview" class="pg-preview">0</div>
+            <button type="button" id="btnCalcularPG" class="btn-accion">🎲 Roll HP</button>
+
             <select id="subclase">
                 <option value="">Selecciona una subclase</option>
             </select>
-            <button type="button" id="btnCalcularPG" class="btn-accion">🎲 Tirar PG</button>
             <!-- Background -->
             <label for="background">Background</label>
             <select id="background" required>
