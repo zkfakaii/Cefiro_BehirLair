@@ -26,13 +26,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     let currentStatValues = {
         fue: 8, des: 8, con: 8, int: 8, sab: 8, car: 8
     };
-    window.currentStatValues = currentStatValues; // Para poder depurar desde consola
+    window.currentStatValues = currentStatValues; // Para depurar desde consola
 
     console.log('Valores iniciales de stats:', currentStatValues);
-    // Forzar que los inputs tomen el valor de currentStatValues
-document.getElementById('fue').value = currentStatValues.fue;
-document.getElementById('des').value = currentStatValues.des;
-// ... etc para todos
 
     if (!window.dndData) {
         alert('Error: no se pudo cargar el sistema de datos');
@@ -132,103 +128,113 @@ document.getElementById('des').value = currentStatValues.des;
     }
 
     // ============================================
-// FUNCIONES PARA POINT BUY (CORREGIDAS)
-// ============================================
-function getTotalSpentPoints() {
-
-    console.log('Calculando puntos gastados, currentStatValues:', currentStatValues);
-    let total = 0;
-    for (let stat in currentStatValues) {
-        const value = currentStatValues[stat];
-        // Asegurar que el valor existe en statCosts, si no, asumir costo 0
-        total += statCosts[value] || 0;
-    }
-    return total;
-}
-
-function updateAllStatsDisplay() {
-
-    console.log('Ejecutando updateAllStatsDisplay');
-    const spent = getTotalSpentPoints();
-    const puntosRestantes = document.getElementById('puntos-totales');
-    if (puntosRestantes) {
-        puntosRestantes.textContent = TOTAL_POINTS - spent;
+    // FUNCIONES PARA POINT BUY
+    // ============================================
+    function getTotalSpentPoints() {
+        console.log('Calculando puntos gastados, currentStatValues:', currentStatValues);
+        let total = 0;
+        for (let stat in currentStatValues) {
+            const value = currentStatValues[stat];
+            total += statCosts[value] || 0;
+        }
+        return total;
     }
 
-    for (let stat in currentStatValues) {
-        const input = document.getElementById(stat);
-        
-        
-        // Asegurar que el input muestre el valor correcto
-        if (input) {
-            input.value = currentStatValues[stat];
+    function updateAllStatsDisplay() {
+        console.log('Ejecutando updateAllStatsDisplay');
+        const spent = getTotalSpentPoints();
+        const puntosRestantes = document.getElementById('puntos-totales');
+        if (puntosRestantes) {
+            puntosRestantes.textContent = TOTAL_POINTS - spent;
         }
-        
-       
+
+        for (let stat in currentStatValues) {
+            const input = document.getElementById(stat);
+            if (input) {
+                input.value = currentStatValues[stat];
+            }
+        }
+
+        // Habilitar/deshabilitar botones según puntos y límites
+        document.querySelectorAll('.stat-row').forEach(row => {
+            const stat = row.dataset.stat;
+            const upBtn = row.querySelector('.stat-up');
+            const downBtn = row.querySelector('.stat-down');
+            const currentVal = currentStatValues[stat];
+
+            if (upBtn) {
+                const nextVal = currentVal + 1;
+                const currentTotalCost = getTotalSpentPoints();
+                const nextStatCost = (statCosts[nextVal] || 0) - (statCosts[currentVal] || 0);
+                upBtn.disabled = (nextVal > MAX_STAT) || (currentTotalCost + nextStatCost > TOTAL_POINTS);
+            }
+            if (downBtn) {
+                downBtn.disabled = currentVal <= MIN_STAT;
+            }
+        });
     }
 
-    // Habilitar/deshabilitar botones según puntos y límites
-    document.querySelectorAll('.stat-row').forEach(row => {
-        const stat = row.dataset.stat;
-        const upBtn = row.querySelector('.stat-up');
-        const downBtn = row.querySelector('.stat-down');
-        const currentVal = currentStatValues[stat];
+    function handleStatChange(stat, change) {
+        const newVal = currentStatValues[stat] + change;
+        if (newVal < MIN_STAT || newVal > MAX_STAT) return;
 
-        if (upBtn) {
-            const nextVal = currentVal + 1;
-            const currentTotalCost = getTotalSpentPoints();
-            const nextStatCost = (statCosts[nextVal] || 0) - (statCosts[currentVal] || 0);
-            upBtn.disabled = (nextVal > MAX_STAT) || (currentTotalCost + nextStatCost > TOTAL_POINTS);
-        }
-        if (downBtn) {
-            downBtn.disabled = currentVal <= MIN_STAT;
-        }
-    });
-}
+        const oldCost = statCosts[currentStatValues[stat]] || 0;
+        const newCost = statCosts[newVal] || 0;
+        const currentTotal = getTotalSpentPoints();
+        const newTotal = currentTotal + (newCost - oldCost);
 
-  // ============================================
-// PASO 2: Guardar datos y redirigir
-// ============================================
-window.irAlPaso2 = function() {
-    // Obtener los valores actuales del formulario
-    const datosPaso1 = {
-        nombre: document.getElementById('nombre').value,
-        raza: document.getElementById('raza').value,
-        clase: document.getElementById('clase').value,
-        subclase: document.getElementById('subclase').value,
-        nivel: document.getElementById('nivel_creacion').value,
-        background: document.getElementById('background').value,
-        stats: { ...currentStatValues } // clonar objeto
+        if (newTotal > TOTAL_POINTS) return;
+
+        currentStatValues[stat] = newVal;
+        updateAllStatsDisplay();
+    }
+
+    // ============================================
+    // FUNCIÓN PARA IR AL PASO 2 (mejorada)
+    // ============================================
+    window.irAlPaso2 = function() {
+        // Comprobar que todos los elementos existen
+        const elementos = {
+            nombre: document.getElementById('nombre'),
+            raza: document.getElementById('raza'),
+            clase: document.getElementById('clase'),
+            subclase: document.getElementById('subclase'),
+            nivel: document.getElementById('nivel_creacion'),
+            background: document.getElementById('background')
+        };
+
+        for (let key in elementos) {
+            if (!elementos[key]) {
+                console.error(`Error: No se encuentra el campo "${key}" en el DOM.`);
+                alert(`Error interno: falta el campo ${key}. No se puede continuar.`);
+                return;
+            }
+        }
+
+        // Obtener los valores
+        const datosPaso1 = {
+            nombre: elementos.nombre.value,
+            raza: elementos.raza.value,
+            clase: elementos.clase.value,
+            subclase: elementos.subclase.value,
+            nivel: elementos.nivel.value,
+            background: elementos.background.value,
+            stats: { ...currentStatValues }
+        };
+
+        // Guardar en localStorage
+        localStorage.setItem('cefiro_paso1', JSON.stringify(datosPaso1));
+
+        // Redirigir a la página 2 (asegúrate de que el archivo se llame así)
+        window.location.href = 'crear_2.html';
     };
-    
-    // Guardar en localStorage
-    localStorage.setItem('cefiro_paso1', JSON.stringify(datosPaso1));
-    
-    // Redirigir a la página 2
-    window.location.href = 'crear_2.html';
-};
-
-function handleStatChange(stat, change) {
-    const newVal = currentStatValues[stat] + change;
-    if (newVal < MIN_STAT || newVal > MAX_STAT) return;
-
-    const oldCost = statCosts[currentStatValues[stat]] || 0;
-    const newCost = statCosts[newVal] || 0;
-    const currentTotal = getTotalSpentPoints();
-    const newTotal = currentTotal + (newCost - oldCost);
-
-    if (newTotal > TOTAL_POINTS) return;
-
-    currentStatValues[stat] = newVal;
-    updateAllStatsDisplay();
-}
 
     // ============================================
     // EVENTOS PARA LOS BOTONES DE ESTADÍSTICAS
     // ============================================
     document.querySelectorAll('.stat-up').forEach(btn => {
         btn.addEventListener('click', (e) => {
-            console.log('Click en botón + o -');
+            console.log('Click en botón +');
             e.preventDefault();
             const statRow = btn.closest('.stat-row');
             const stat = statRow.dataset.stat;
@@ -239,7 +245,7 @@ function handleStatChange(stat, change) {
 
     document.querySelectorAll('.stat-down').forEach(btn => {
         btn.addEventListener('click', (e) => {
-            console.log('Click en botón + o -');
+            console.log('Click en botón -');
             e.preventDefault();
             const statRow = btn.closest('.stat-row');
             const stat = statRow.dataset.stat;
@@ -348,27 +354,20 @@ function handleStatChange(stat, change) {
         window.location.href = `ficha.html?id=${personaje.id}`;
     });
 
-
     // ============================================
-// INICIALIZACIÓN
-// ============================================
-try {
-    console.log('Llamando a updateAllStatsDisplay');
-    updateAllStatsDisplay(); // Muestra los valores iniciales (8 en todo)
-    
-    console.log('Cargando opciones...');
-    await cargarOpciones();
-    setTimeout(() => {
-    updateAllStatsDisplay();
-    console.log('Actualización forzada de stats después de 500ms');
-}, 500);
-    console.log('Opciones cargadas');
-    
-    console.log('Actualizando preview PG');
-    await actualizarPreviewPG();
-} catch (error) {
-    console.error('Error en la inicialización:', error);
-}
+    // INICIALIZACIÓN
+    // ============================================
+    try {
+        console.log('Llamando a updateAllStatsDisplay');
+        updateAllStatsDisplay(); // Muestra los valores iniciales (8 en todo)
 
+        console.log('Cargando opciones...');
+        await cargarOpciones();
+        console.log('Opciones cargadas');
 
+        console.log('Actualizando preview PG');
+        await actualizarPreviewPG();
+    } catch (error) {
+        console.error('Error en la inicialización:', error);
+    }
 });

@@ -1228,3 +1228,66 @@ td {
     flex: 0.5; /* La mitad del ancho que el campo de clase */
 }
 
+
+
+
+/* Fondo para los botones de agregar (igual que los de PG) */
+.btn-pg {
+    background: linear-gradient(135deg, #c4642a 0%, #330101 100%);
+    color: #F0D8A0;
+    border: 1.5px solid #E6AB45;
+    /* el resto de propiedades ya están */
+}
+
+.btn-pg:hover {
+    background: linear-gradient(135deg, #7236ff 0%, #9c0505 100%);
+    border-color: #f0b85c;
+    color: #F0D8A0;
+    cursor: pointer;
+}
+
+
+/*pag 3/*
+
+/* Ajustes para la página de habilidades */
+#skills-container .stat-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    border-radius: 20px;
+   
+    margin-bottom: 16px; /* Ajusta este valor a tu gusto (ej. 5px, 10px) */
+
+    
+}
+#skills-container .stat-row label {
+    font-size: 1.8em; /* Ajusta el valor a tu gusto */
+     min-width: 120px;
+}
+
+
+
+/* Para la página de habilidades: modificadores y totales en negro */
+#skills-container .stat-mod,
+#skills-container .skill-total {
+    color: #000000 !important;
+     font-size: 2em;
+}
+
+.skill-check {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    accent-color: #b3541c; /* Color del checkbox */
+}
+
+
+/* Estilo para el cuadro de información de competencias */
+.puntos-restantes p {
+    margin: 5px 0;
+}
+
+.puntos-restantes strong {
+    color: #b3541c;
+}

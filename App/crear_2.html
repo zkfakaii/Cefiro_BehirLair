@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cefiro - Crear personaje (skills)</title>
+    <title>Cefiro - Crear personaje (Trasfondo)</title>
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11,25 +11,55 @@
 </head>
 <body>
     <div class="crear-container">
-        <h1 class="logo">🔥 HABILIDADES/SKILLS 🔥</h1>
+        <h1 class="logo">🔥 TRASFONDO 🔥</h1>
 
         <form id="form-crear-paso2" class="form-crear">
-            <!-- Contenido placeholder -->
-            <p style="text-align: center; color: #70300b; font-size: 1.5em; margin: 40px 0;">
-                Aquí irán más opciones del personaje (próximamente)
-            </p>
+            <!-- Alineamiento -->
+            <label for="alineamiento">Alineamiento</label>
+            <select id="alineamiento" class="form-crear">
+                <option value="LB">Legal Bueno (LB)</option>
+                <option value="NB">Neutral Bueno (NB)</option>
+                <option value="CB">Caótico Bueno (CB)</option>
+                <option value="LN">Legal Neutral (LN)</option>
+                <option value="N">Neutral (N)</option>
+                <option value="CN">Caótico Neutral (CN)</option>
+                <option value="LM">Legal Malvado (LM)</option>
+                <option value="NM">Neutral Malvado (NM)</option>
+                <option value="CM">Caótico Malvado (CM)</option>
+            </select>
+
+            <!-- Rasgos de personalidad -->
+            <label for="rasgos">Rasgos de personalidad</label>
+            <textarea id="rasgos" rows="3" placeholder="Describe los rasgos de tu personaje..."></textarea>
+
+           <!-- Ideales -->
+<label>Ideales</label>
+<div id="ideales-container" class="contenedor-dinamico"></div>
+<button type="button" id="agregar-ideal" class="btn-pg" style="margin-bottom: 15px; width: auto;">+ Añadir ideal</button>
+
+<!-- Vínculos -->
+<label>Vínculos</label>
+<div id="vinculos-container" class="contenedor-dinamico"></div>
+<button type="button" id="agregar-vinculo" class="btn-pg" style="margin-bottom: 15px; width: auto;">+ Añadir vínculo</button>
+
+<!-- Defectos -->
+<label>Defectos</label>
+<div id="defectos-container" class="contenedor-dinamico"></div>
+<button type="button" id="agregar-defecto" class="btn-pg" style="margin-bottom: 15px; width: auto;">+ Añadir defecto</button>
+            <!-- Historia -->
+            <label for="historia">Historia</label>
+            <textarea id="historia" rows="5" placeholder="Escribe la historia de tu personaje..."></textarea>
 
             <!-- Botones -->
             <div class="acciones-crear">
                 <button type="button" class="btn-secundario" onclick="window.location.href='crear.html'">↩️ Volver</button>
-                <button type="button" class="btn-primario" onclick="alert('Próximamente: finalizar creación')">⏩ Siguiente</button>
+                <button type="button" class="btn-primario" id="btn-siguiente">⏩ Siguiente</button>
             </div>
         </form>
     </div>
 
-    <!-- Scripts (opcionales, por si luego se necesita lógica) -->
     <script src="../core/personaje.js"></script>
     <script src="../sistemas/dnd5e/data-loader.js"></script>
-    <!-- <script src="crear-paso2.js"></script> -->
+    <script src="crear_2.js"></script>
 </body>
 </html>

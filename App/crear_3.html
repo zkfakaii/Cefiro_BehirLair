@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cefiro - Crear personaje (Habilidades)</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Almendra+SC&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="crear-container">
+        <h1 class="logo">🔥 HABILIDADES 🔥</h1>
+
+        <form id="form-crear-paso3" class="form-crear">
+            <!-- Aquí se generarán las habilidades dinámicamente -->
+            <div id="skills-container" class="stats-crear" style="grid-template-columns: 1fr;"></div>
+
+            <!-- Botones -->
+            <div class="acciones-crear">
+                <button type="button" class="btn-secundario" onclick="window.location.href='crear_2.html'">↩️ Volver</button>
+                <button type="button" class="btn-primario" id="btn-finalizar">✅ Finalizar</button>
+            </div>
+        </form>
+    </div>
+
+    <script src="../core/personaje.js"></script>
+    <script src="../sistemas/dnd5e/data-loader.js"></script>
+    <script src="crear_3.js"></script>
+</body>
+</html>
