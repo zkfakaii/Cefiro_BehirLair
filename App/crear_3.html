@@ -16,7 +16,11 @@
         <form id="form-crear-paso3" class="form-crear">
             <!-- Aquí se generarán las habilidades dinámicamente -->
             <div id="skills-container" class="stats-crear" style="grid-template-columns: 1fr;"></div>
-
+<!-- Herramientas -->
+<h2>Herramientas</h2>
+<p id="texto-herramientas" style="color: #70300b; font-size: 1.2em; margin-bottom: 10px;"></p>
+<div id="herramientas-container" class="contenedor-dinamico"></div>
+<button type="button" id="agregar-herramienta" class="btn-pg" style="margin-bottom: 15px;">+ Añadir herramienta</button>
             <!-- Botones -->
             <div class="acciones-crear">
                 <button type="button" class="btn-secundario" onclick="window.location.href='crear_2.html'">↩️ Volver</button>
@@ -24,6 +28,8 @@
             </div>
         </form>
     </div>
+
+    
 
     <script src="../core/personaje.js"></script>
     <script src="../sistemas/dnd5e/data-loader.js"></script>
