@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Cefiro - Ficha de personaje</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap"
+        rel="stylesheet">
+    </head>
+    
+    <body>
+        <div class="container">
+            <!-- Cabecera con foto y datos básicos -->
+            <div class="header">
+                <div class="foto">
+                <div class="foto-placeholder">📷</div>
+            </div>
+            <div class="info">
+                <input type="text" id="nombre" class="nombre-input" placeholder="Nombre" value="Paxo">
+                <div class="detalles">
+                    <input type="text" id="raza" placeholder="Raza" value="Tabaxi">
+                    <input type="text" id="clase" placeholder="Clase" value="Hechicero">
+                    <input type="text" id="subclase" placeholder="Subclase" value="Dracónico">
+                    <span>Nvl <input type="number" id="nivel" value="3" min="1" max="20" style="width: 50px;"></span>
+                    <input type="text" id="alineamiento" placeholder="Alineamiento" value="NB">
+                </div>
+            </div>
+        </div>
+
+        <!-- Slider / Pestañas -->
+        <div class="tabs">
+            <input type="radio" name="tabs" id="tab-principal" checked>
+            <label for="tab-principal">Principal</label>
+
+            <input type="radio" name="tabs" id="tab-notas">
+            <label for="tab-notas">Notas</label>
+
+            <input type="radio" name="tabs" id="tab-rasgos">
+            <label for="tab-rasgos">Rasgos</label>
+
+            <input type="radio" name="tabs" id="tab-objetos">
+            <label for="tab-objetos">Objetos</label>
+
+            <input type="radio" name="tabs" id="tab-ataques">
+            <label for="tab-ataques">Ataques</label>
+
+            <input type="radio" name="tabs" id="tab-magia">
+            <label for="tab-magia">Magia</label>
+
+            <input type="radio" name="tabs" id="tab-trasfondo">
+            <label for="tab-trasfondo">Trasfondo</label>
+
+            <div class="tab-content">
+                <!-- SECCIÓN PRINCIPAL: Stats básicos -->
+                <div class="tab-panel" id="content-principal">
+                    <h2>Características</h2>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <span class="stat-label">FUE</span>
+                            <input type="number" id="fue" value="9" min="1" max="30" class="stat-input">
+                            <span id="mod-fue" class="stat-mod">( -1 )</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">DES</span>
+                            <input type="number" id="des" value="15" min="1" max="30" class="stat-input">
+                            <span id="mod-des" class="stat-mod">( +2 )</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">CON</span>
+                            <input type="number" id="con" value="10" min="1" max="30" class="stat-input">
+                            <span id="mod-con" class="stat-mod">( 0 )</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">INT</span>
+                            <input type="number" id="int" value="11" min="1" max="30" class="stat-input">
+                            <span id="mod-int" class="stat-mod">( 0 )</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">SAB</span>
+                            <input type="number" id="sab" value="8" min="1" max="30" class="stat-input">
+                            <span id="mod-sab" class="stat-mod">( -1 )</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">CAR</span>
+                            <input type="number" id="car" value="16" min="1" max="30" class="stat-input">
+                            <span id="mod-car" class="stat-mod">( +3 )</span>
+                        </div>
+                    </div>
+
+                    <div class="hp-armor">
+                        <div class="hp-box">
+                            <span class="hp-label">PG</span>
+                            <input type="number" id="pg_max" value="18" min="1" class="hp-input" style="width: 60px;"> /
+                            <input type="number" id="pg_actuales" value="18" min="0" class="hp-input" style="width: 60px;">
+                        </div>
+                        <div class="armor-box">
+                            <span class="armor-label">CA</span>
+                            <input type="number" id="ca" value="13" min="0" class="armor-input" style="width: 60px;">
+                        </div>
+                    </div>
+
+                    <h2>Habilidades</h2>
+                    <div class="skills-list" id="skills-list">
+                        <!-- Se llenará con JavaScript -->
+                    </div>
+                </div>
+
+                <!-- SECCIÓN NOTAS -->
+                <div class="tab-panel" id="content-notas">
+                    <h2>Notas de campaña</h2>
+                    <textarea id="notas" placeholder="Escribe aquí tus notas de la campaña...">Su familia la entrego al frente patriotico volcanico al no saber como controlar su poder latente desde pequeño...</textarea>
+                </div>
+
+                <!-- SECCIÓN RASGOS -->
+                <div class="tab-panel" id="content-rasgos">
+                    <h2>Rasgos</h2>
+                    <textarea id="rasgos" placeholder="Rasgos de clase, raciales, etc." style="height: 300px;">Agilidad felina: Puedes duplicar tu velocidad hasta el final del turno. Recarga cuando no te mueves un turno.
+Garras de gato: Tus garras son armas naturales (1d4 + FUE).
+Visión nocturna: 60 pies.
+Resistencia dracónica: +1 PG por nivel, CA = 13 + DES.</textarea>
+                </div>
+
+                <!-- SECCIÓN OBJETOS -->
+                <div class="tab-panel" id="content-objetos">
+                    <h2>Objetos</h2>
+                    <textarea id="objetos" placeholder="Lista de objetos" style="height: 300px;">Collar de la Lucha (foco arcano)
+Paquete de explorador
+Hoz
+2 dagas
+Herramientas de ladrón
+Lanza
+Ropajes del Frente
+2 bolsas de cuero</textarea>
+                </div>
+
+                <!-- SECCIÓN ATAQUES -->
+                <div class="tab-panel" id="content-ataques">
+                    <h2>Ataques</h2>
+                    <textarea id="ataques" placeholder="Lista de ataques" style="height: 300px;">Hoz: +1, 1d4+1 cortante
+Daga: +4, 1d4+2 perforante
+Lanza: +1, 1d6+1 perforante
+Garras: +1, 1d6+1 cortante</textarea>
+                </div>
+
+                <!-- SECCIÓN MAGIA -->
+                <div class="tab-panel" id="content-magia">
+                    <h2>Conjuros</h2>
+                    <textarea id="magia" placeholder="Conjuros conocidos" style="height: 300px;">Cantrips: Prestidigitación, Shocking Grasp, Lightning Lure, Mending
+Nivel 1: Chromatic Orb, Disguise Self, Command, Thunderwave, Shield, Earth Tremor, Detect Magic
+Nivel 2: Aliento de Dragón, Shatter, Maximilian's Earthen Grasp</textarea>
+                </div>
+
+                <!-- SECCIÓN TRASFONDO -->
+                <div class="tab-panel" id="content-trasfondo">
+                    <h2>Trasfondo</h2>
+                    <textarea id="trasfondo" placeholder="Historia, ideales, vínculos, defectos" style="height: 300px;">Historia: Su familia lo entregó al Frente Patriótico Volcánico...
+Ideales: Difundir sus ideas revolucionarias...
+Vínculos: Frente Patriótico Volcánico
+Defectos: Narcolepsia</textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- Botones de acción -->
+        <div style="display: flex; gap: 10px; margin-top: 20px;">
+            <button id="guardarBtn" class="btn-accion">💾 Guardar</button>
+            <button id="exportarBtn" class="btn-accion">📤 Exportar</button>
+            <button id="importarBtn" class="btn-accion">📂 Importar</button>
+            <button onclick="window.location.href='index.html'" class="btn-accion">🏠 Inicio</button>
+        </div>
+        <div id="mensaje" class="mensaje"></div>
+    </div>
+
+    <script src="../core/personaje.js"></script>
+    <script src="../sistemas/dnd5e/adaptador-5ecompanion.js"></script>
+    <script src="../sistemas/dnd5e/data-loader.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

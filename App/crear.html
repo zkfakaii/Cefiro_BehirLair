@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cefiro - Crear personaje</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Almendra+SC&family=IM+Fell+English:ital@0;1&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div class="crear-container">
+        <h1 class="logo">🔥 CREAR PERSONAJE 🔥</h1>
+
+        <form id="form-crear" class="form-crear">
+            <!-- Nombre -->
+            <label for="nombre">Nombre del personaje</label>
+            <input type="text" id="nombre" placeholder="Ej: AnimeCrack11" required>
+
+            <!-- Raza -->
+            <label for="raza">Raza</label>
+            <select id="raza" required>
+                <option value="">Selecciona una raza</option>
+            </select>
+
+
+            <!-- clase y nivel -->
+
+            <div class="fila">
+                <div class="campo">
+                    <label for="clase">Clase</label>
+                    <select id="clase" required>
+                        <option value="">Selecciona una clase</option>
+                    </select>
+                </div>
+                <div class="campo campo-nivel">
+                    <label for="nivel_creacion">Nivel</label>
+                    <input type="number" id="nivel_creacion" value="1" min="1" max="20" required>
+                </div>
+            </div>
+
+            <!-- Subclase (se llena dinámicamente) -->
+<label for="subclase">Subclase</label>
+<select id="subclase">
+    <option value="">Selecciona una subclase</option>
+</select>
+
+            <!-- Previsualización de PG -->
+            <!-- Fila de PG: recuadro y botones -->
+            <div class="fila-pg">
+                <div class="pg-preview-container">
+                    <label>Vida (HP)</label>
+                    <div id="pg_preview" class="pg-preview">0</div>
+                </div>
+                <div class="pg-botones">
+                    <button type="button" id="btnCalcularPG" class="btn-pg">🎲 Tirada</button>
+                    <button type="button" id="btnMaxPG" class="btn-pg">🦍 Máx</button>
+                    <button type="button" id="btnMediaPG" class="btn-pg">📊 Media</button>
+                </div>
+            </div>
+            <!-- Background -->
+            <label for="background">Background</label>
+            <select id="background" required>
+                <option value="">Selecciona un background</option>
+            </select>
+
+            <!-- Stats (valores por defecto) -->
+            <!-- Stats (valores por defecto) -->
+           
+           
+            <h2>Características</h2>
+
+              <div class="puntos-restantes">
+                Puntos Disponibles: <span id="puntos-totales">27</span>
+            </div>
+
+            <div class="stats-crear" id="stats-crear-container">
+    <div class="stat-row" data-stat="fue">
+    <label>FUE</label>
+    <div class="stat-control">
+        <button type="button" class="stat-btn stat-down">-</button>
+        <input type="number" id="fue" class="stat-input" value="8" min="8" max="15" readonly>
+        <button type="button" class="stat-btn stat-up">+</button>
+        
+    </div>
+    
+</div>
+                <div class="stat-row" data-stat="des">
+                    <label>DES</label>
+                    <div class="stat-control">
+                        <button type="button" class="stat-btn stat-down">-</button>
+                        <input type="number" id="des" class="stat-input" value="8" min="8" max="15" readonly>
+                        <button type="button" class="stat-btn stat-up">+</button>
+                    </div>
+                    
+                </div>
+                <div class="stat-row" data-stat="con">
+                    <label>CON</label>
+                    <div class="stat-control">
+                        <button type="button" class="stat-btn stat-down">-</button>
+                        <input type="number" id="con" class="stat-input" value="8" min="8" max="15" readonly>
+                        <button type="button" class="stat-btn stat-up">+</button>
+                    </div>
+                   
+                </div>
+                <div class="stat-row" data-stat="int">
+                    <label>INT</label>
+                    <div class="stat-control">
+                        <button type="button" class="stat-btn stat-down">-</button>
+                        <input type="number" id="int" class="stat-input" value="8" min="8" max="15" readonly>
+                        <button type="button" class="stat-btn stat-up">+</button>
+                    </div>
+                   
+                </div>
+                <div class="stat-row" data-stat="sab">
+                    <label>SAB</label>
+                    <div class="stat-control">
+                        <button type="button" class="stat-btn stat-down">-</button>
+                        <input type="number" id="sab" class="stat-input" value="8" min="8" max="15" readonly>
+                        <button type="button" class="stat-btn stat-up">+</button>
+                    </div>
+                   
+                </div>
+                <div class="stat-row" data-stat="car">
+                    <label>CAR</label>
+                    <div class="stat-control">
+                        <button type="button" class="stat-btn stat-down">-</button>
+                        <input type="number" id="car" class="stat-input" value="8" min="8" max="15" readonly>
+                        <button type="button" class="stat-btn stat-up">+</button>
+                    </div>
+                  
+                </div>
+            </div>
+
+            <!-- Botones -->
+          <div class="acciones-crear">
+    <button type="submit" class="btn-primario">✨ Crear personaje</button>
+    <button type="button" class="btn-secundario" onclick="irAlPaso2()">⏩ Siguiente</button>
+</div>
+        </form>
+    </div>
+
+    <script src="../core/personaje.js"></script>
+    <script src="../sistemas/dnd5e/data-loader.js"></script>
+    <script src="crear.js"></script>
+</body>
+
+</html>
