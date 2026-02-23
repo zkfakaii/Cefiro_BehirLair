@@ -1291,3 +1291,186 @@ td {
 .puntos-restantes strong {
     color: #b3541c;
 }
+
+.info-herramientas {
+    color: #70300b;
+    font-size: 1.2em;
+    margin-bottom: 10px;
+}
+
+/* Contenedor de cada campo de herramienta */
+.campo-dinamico {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+    align-items: center;
+}
+
+/* Estilo específico para inputs de herramientas */
+.herramienta-input {
+    flex: 1;
+    padding: 8px 12px;
+    border: 2px solid #33260f;
+    border-radius: 20px;
+    background-color: #E6AB45;
+    color: #000000;
+}
+
+/* Botón eliminar para herramientas */
+.btn-herramienta-eliminar {
+    padding: 8px 12px;
+    border: 2px solid #33260f;
+    border-radius: 20px;
+    background-color: #b3541c;
+    color: #F0D8A0;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.btn-herramienta-eliminar:hover {
+    background: linear-gradient(135deg, #c4642a 0%, #8a4a2a 100%);
+    border-color: #f0b85c;
+}
+
+/* Modal de herramientas */
+/* Modal - estado inicial oculto */
+.modal {
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: background-color 1s ease, opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.modal.show {
+    background-color: rgba(0, 0, 0, 0.8);
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Contenido del modal - animación horizontal */
+.modal-content {
+    background-color: #F0D8A0;
+    border-top: 10px solid #b3541c;    /* Borde superior */
+    border-bottom: 10px solid #b3541c; /* Borde inferior */
+    border-left: none;                 /* Sin borde izquierdo */
+    border-right: none;                /* Sin borde derecho */
+    border-radius: 5px;
+    padding: 20px;
+    max-width: 600px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    position: relative;
+    transform: scaleY(0);               /* Cambiado a scaleY */
+    transform-origin: center;            /* Se expande desde el centro */
+    transition: transform 0.4s ease-out;
+    color: #552006;
+}
+
+.modal.show .modal-content {
+    transform: scaleY(1);                /* Expandido verticalmente */
+}
+   
+
+
+.modal.show .modal-content {
+    transform: scaleX(1);
+}
+
+/* Resto de estilos del modal (cerrar, lista, etc.) se mantienen igual */
+.modal-cerrar {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    font-size: 2em;
+    cursor: pointer;
+    color: #70300b;
+}
+
+.modal-cerrar:hover {
+    color: #b3541c;
+}
+
+.lista-herramientas {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.herramienta-item {
+    background-color: #E6AB45;
+    border: 2px solid #33260f;
+    border-radius: 15px;
+    padding: 10px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.herramienta-item:hover {
+    background-color: #f0b85c;
+    transform: translateY(-2px);
+}
+
+.herramienta-detalle {
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #d9c8a9;
+    border-radius: 15px;
+    display: none;
+}
+
+.herramienta-detalle.visible {
+    display: block;
+
+
+
+}
+
+
+
+
+
+
+
+/* ============================================
+   SCROLLBAR ESTILIZADO (clase reutilizable)
+   ============================================ */
+
+/* WebKit (Chrome, Edge, Safari) */
+.scroll-estilizado::-webkit-scrollbar {
+    width: 12px;
+    height: 12px; /* Para scroll horizontal */
+}
+
+.scroll-estilizado::-webkit-scrollbar-track {
+    background: #2a1e0f;
+    border-radius: 10px;
+    border: 1px solid #33260f;
+}
+
+.scroll-estilizado::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #b3541c 0%, #7a3a1a 100%);
+    border-radius: 10px;
+    border: 2px solid #33260f;
+}
+
+.scroll-estilizado::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #c4642a 0%, #8a4a2a 100%);
+    border-color: #f0b85c;
+}
+
+/* Firefox */
+.scroll-estilizado {
+    scrollbar-width: thin;
+    scrollbar-color: #b3541c #2a1e0f;
+}

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,8 +8,10 @@
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Almendra+SC&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Almendra+SC&family=IM+Fell+English:ital@0;1&display=swap"
+        rel="stylesheet">
 </head>
+
 <body>
     <div class="crear-container">
         <h1 class="logo">🔥 HABILIDADES 🔥</h1>
@@ -16,23 +19,48 @@
         <form id="form-crear-paso3" class="form-crear">
             <!-- Aquí se generarán las habilidades dinámicamente -->
             <div id="skills-container" class="stats-crear" style="grid-template-columns: 1fr;"></div>
-<!-- Herramientas -->
-<h2>Herramientas</h2>
-<p id="texto-herramientas" style="color: #70300b; font-size: 1.2em; margin-bottom: 10px;"></p>
-<div id="herramientas-container" class="contenedor-dinamico"></div>
-<button type="button" id="agregar-herramienta" class="btn-pg" style="margin-bottom: 15px;">+ Añadir herramienta</button>
+           
+
+
+
+           
+            <!-- Herramientas -->
+            <h2>Herramientas</h2>
+            <p id="texto-herramientas" class="info-herramientas"></p>
+            <div id="herramientas-container" class="contenedor-dinamico"></div>
+            
+                       <!-- Botón para ver listado de herramientas -->
+<div style="text-align: right; margin-bottom: 10px;">
+    <button type="button" id="btn-ver-herramientas" class="btn-pg"> Revisar herramientas</button>
+</div>
+            
+            <button type="button" id="agregar-herramienta" class="btn-pg" style="margin-bottom: 15px;">+ Añadir
+                herramienta (Opcional)</button>
+
+                
             <!-- Botones -->
             <div class="acciones-crear">
-                <button type="button" class="btn-secundario" onclick="window.location.href='crear_2.html'">↩️ Volver</button>
+                <button type="button" class="btn-secundario" onclick="window.location.href='crear_2.html'">↩️
+                    Volver</button>
                 <button type="button" class="btn-primario" id="btn-finalizar">✅ Finalizar</button>
             </div>
         </form>
     </div>
 
-    
+<!-- Modal de herramientas -->
+<div id="modal-herramientas" class="modal">
+    <div class="modal-content scroll-estilizado">
+        <span class="modal-cerrar" id="cerrar-modal">&times;</span>
+        <h2>Herramientas disponibles</h2>
+        <div id="lista-herramientas" class="lista-herramientas"></div>
+    </div>
+</div>
 
     <script src="../core/personaje.js"></script>
     <script src="../sistemas/dnd5e/data-loader.js"></script>
     <script src="crear_3.js"></script>
+
+
 </body>
+
 </html>
