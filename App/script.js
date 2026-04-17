@@ -440,25 +440,32 @@ async function inicializarFicha() {
         localStorage.setItem('cefiro_personajes', JSON.stringify(personajes));
     }
 
+    // Normaliza un nombre de salvación de la API a tu formato interno ('fue', 'des', ...)
+    function normalizarSalvacion(nombre) {
+        if (!nombre) return '';
+        const n = nombre.toLowerCase().trim();
+        if (n.startsWith('str') || n.includes('fuerza')) return 'fue';
+        if (n.startsWith('dex') || n.includes('destreza')) return 'des';
+        if (n.startsWith('con') || n.includes('constitucion') || n.includes('constitución')) return 'con';
+        if (n.startsWith('int') || n.includes('inteligencia')) return 'int';
+        if (n.startsWith('wis') || n.includes('sabiduria') || n.includes('sabiduría')) return 'sab';
+        if (n.startsWith('cha') || n.includes('carisma')) return 'car';
+        return n;
+    }
+
     async function actualizarSalvacionesPorClase() {
         const clase = claseInput?.value;
         if (!clase) return;
 
         try {
             const salvaciones = await window.dndData.obtenerSalvacionesPorClase(clase);
+            // Normaliza todas las salvaciones de la API a tu formato
+            const salvNorm = salvaciones.map(normalizarSalvacion);
             const saves = ['fue', 'des', 'con', 'int', 'sab', 'car'];
             saves.forEach(save => {
                 const chk = document.getElementById(`prof-save-${save}`);
                 if (chk) {
-                    const esCompetente = salvaciones.some(s =>
-                        s.toLowerCase().includes(save) ||
-                        (save === 'fue' && s.toLowerCase().includes('str')) ||
-                        (save === 'des' && s.toLowerCase().includes('dex')) ||
-                        (save === 'con' && s.toLowerCase().includes('con')) ||
-                        (save === 'int' && s.toLowerCase().includes('int')) ||
-                        (save === 'sab' && s.toLowerCase().includes('wis')) ||
-                        (save === 'car' && s.toLowerCase().includes('cha'))
-                    );
+                    const esCompetente = salvNorm.includes(save);
                     chk.checked = esCompetente;
                 }
             });
