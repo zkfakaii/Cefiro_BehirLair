@@ -1,5 +1,5 @@
 // app/script.js
-// CEFIRO - Completo con auto‑guardado, modificadores y cálculo de PG
+// CEFIRO - Completo con auto‑guardado, modificadores, cálculo de PG, herramientas y salvaciones por clase
 
 document.addEventListener('DOMContentLoaded', () => {
     const esInicio = window.location.pathname.includes('index.html') || window.location.pathname.endsWith('/');
@@ -99,7 +99,7 @@ function inicializarInicio() {
         input.click();
     }
 
-    window.eliminarPersonaje = function(id) {
+    window.eliminarPersonaje = function (id) {
         if (!confirm('¿Eliminar este personaje?')) return;
 
         let personajes = obtenerPersonajes();
@@ -113,7 +113,7 @@ function inicializarInicio() {
 // ============================================
 // PANTALLA DE FICHA
 // ============================================
-function inicializarFicha() {
+async function inicializarFicha() {
     console.log('📜 Inicializando ficha de personaje');
 
     // Referencias a elementos del formulario
@@ -132,6 +132,21 @@ function inicializarFicha() {
     const intInput = document.getElementById('int');
     const sabInput = document.getElementById('sab');
     const carInput = document.getElementById('car');
+    // Salvaciones y competencia
+    const profBonusSpan = document.getElementById('prof-bonus');
+    const saveFue = document.getElementById('save-fue');
+    const saveDes = document.getElementById('save-des');
+    const saveCon = document.getElementById('save-con');
+    const saveInt = document.getElementById('save-int');
+    const saveSab = document.getElementById('save-sab');
+    const saveCar = document.getElementById('save-car');
+    const profSaveFue = document.getElementById('prof-save-fue');
+    const profSaveDes = document.getElementById('prof-save-des');
+    const profSaveCon = document.getElementById('prof-save-con');
+    const profSaveInt = document.getElementById('prof-save-int');
+    const profSaveSab = document.getElementById('prof-save-sab');
+    const profSaveCar = document.getElementById('prof-save-car');
+    // Textareas
     const notasInput = document.getElementById('notas');
     const rasgosInput = document.getElementById('rasgos');
     const objetosInput = document.getElementById('objetos');
@@ -152,6 +167,10 @@ function inicializarFicha() {
     const guardarBtn = document.getElementById('guardarBtn');
     const exportarBtn = document.getElementById('exportarBtn');
     const importarBtn = document.getElementById('importarBtn');
+
+    // Herramientas (dinámicas)
+    const herramientasContainer = document.getElementById('herramientas-container');
+    const agregarHerramientaBtn = document.getElementById('agregar-herramienta');
 
     // Obtener ID de la URL
     const urlParams = new URLSearchParams(window.location.search);
@@ -175,7 +194,11 @@ function inicializarFicha() {
         return Math.floor((valor - 10) / 2);
     }
 
-    function actualizarModificadores() {
+    function calcularBonoCompetencia(nivel) {
+        return Math.floor((nivel - 1) / 4) + 2;
+    }
+
+    function actualizarSalvaciones() {
         const stats = {
             fue: parseInt(fueInput?.value) || 10,
             des: parseInt(desInput?.value) || 10,
@@ -184,15 +207,23 @@ function inicializarFicha() {
             sab: parseInt(sabInput?.value) || 10,
             car: parseInt(carInput?.value) || 10
         };
+        const nivel = parseInt(nivelInput?.value) || 1;
+        const bonoComp = calcularBonoCompetencia(nivel);
 
-        if (modFue) modFue.textContent = `( ${calcularModificador(stats.fue) >= 0 ? '+' : ''}${calcularModificador(stats.fue)} )`;
-        if (modDes) modDes.textContent = `( ${calcularModificador(stats.des) >= 0 ? '+' : ''}${calcularModificador(stats.des)} )`;
-        if (modCon) modCon.textContent = `( ${calcularModificador(stats.con) >= 0 ? '+' : ''}${calcularModificador(stats.con)} )`;
-        if (modInt) modInt.textContent = `( ${calcularModificador(stats.int) >= 0 ? '+' : ''}${calcularModificador(stats.int)} )`;
-        if (modSab) modSab.textContent = `( ${calcularModificador(stats.sab) >= 0 ? '+' : ''}${calcularModificador(stats.sab)} )`;
-        if (modCar) modCar.textContent = `( ${calcularModificador(stats.car) >= 0 ? '+' : ''}${calcularModificador(stats.car)} )`;
+        const saves = ['fue', 'des', 'con', 'int', 'sab', 'car'];
+        saves.forEach(stat => {
+            const mod = calcularModificador(stats[stat]);
+            const isProficient = document.getElementById(`prof-save-${stat}`)?.checked || false;
+            const total = mod + (isProficient ? bonoComp : 0);
+            const saveSpan = document.getElementById(`save-${stat}`);
+            if (saveSpan) saveSpan.textContent = (total >= 0 ? '+' : '') + total;
+        });
+    }
 
-        actualizarHabilidades(stats);
+    function actualizarProfBonus() {
+        const nivel = parseInt(nivelInput?.value) || 1;
+        const bono = calcularBonoCompetencia(nivel);
+        if (profBonusSpan) profBonusSpan.textContent = (bono >= 0 ? '+' : '') + bono;
     }
 
     function actualizarHabilidades(stats) {
@@ -225,6 +256,28 @@ function inicializarFicha() {
         skillsList.innerHTML = html;
     }
 
+    function actualizarModificadores() {
+        const stats = {
+            fue: parseInt(fueInput?.value) || 10,
+            des: parseInt(desInput?.value) || 10,
+            con: parseInt(conInput?.value) || 10,
+            int: parseInt(intInput?.value) || 10,
+            sab: parseInt(sabInput?.value) || 10,
+            car: parseInt(carInput?.value) || 10
+        };
+
+        if (modFue) modFue.textContent = `( ${calcularModificador(stats.fue) >= 0 ? '+' : ''}${calcularModificador(stats.fue)} )`;
+        if (modDes) modDes.textContent = `( ${calcularModificador(stats.des) >= 0 ? '+' : ''}${calcularModificador(stats.des)} )`;
+        if (modCon) modCon.textContent = `( ${calcularModificador(stats.con) >= 0 ? '+' : ''}${calcularModificador(stats.con)} )`;
+        if (modInt) modInt.textContent = `( ${calcularModificador(stats.int) >= 0 ? '+' : ''}${calcularModificador(stats.int)} )`;
+        if (modSab) modSab.textContent = `( ${calcularModificador(stats.sab) >= 0 ? '+' : ''}${calcularModificador(stats.sab)} )`;
+        if (modCar) modCar.textContent = `( ${calcularModificador(stats.car) >= 0 ? '+' : ''}${calcularModificador(stats.car)} )`;
+
+        actualizarHabilidades(stats);
+        actualizarSalvaciones();
+        actualizarProfBonus();
+    }
+
     async function calcularPuntosGolpe() {
         const clase = claseInput?.value;
         const nivel = parseInt(nivelInput?.value) || 1;
@@ -254,6 +307,14 @@ function inicializarFicha() {
     }
 
     function obtenerDatos() {
+        // Recoger herramientas
+        const herramientasInputs = document.querySelectorAll('#herramientas-container .input-dinamico');
+        const herramientas = [];
+        herramientasInputs.forEach(input => {
+            const valor = input.value.trim();
+            if (valor) herramientas.push(valor);
+        });
+
         return {
             id: window.personajeIdActual,
             nombre: nombreInput?.value || 'Nuevo',
@@ -278,11 +339,21 @@ function inicializarFicha() {
             objetos: objetosInput?.value || '',
             ataques: ataquesInput?.value || '',
             magia: magiaInput?.value || '',
-            trasfondo: trasfondoInput?.value || ''
+            trasfondo: trasfondoInput?.value || '',
+            herramientas: herramientas,
+            proficienciasSalvacion: {
+                fue: profSaveFue?.checked || false,
+                des: profSaveDes?.checked || false,
+                con: profSaveCon?.checked || false,
+                int: profSaveInt?.checked || false,
+                sab: profSaveSab?.checked || false,
+                car: profSaveCar?.checked || false
+            }
         };
     }
 
-    function rellenar(personaje) {
+    async function rellenar(personaje) {
+        // Datos básicos
         if (nombreInput) nombreInput.value = personaje.nombre || '';
         if (nivelInput) nivelInput.value = personaje.nivel || 1;
         if (claseInput) claseInput.value = personaje.clase || '';
@@ -293,6 +364,7 @@ function inicializarFicha() {
         if (pgActualesInput) pgActualesInput.value = personaje.pg_actuales || 10;
         if (caInput) caInput.value = personaje.ca || 10;
 
+        // Stats
         if (fueInput) fueInput.value = personaje.stats?.fue || 10;
         if (desInput) desInput.value = personaje.stats?.des || 10;
         if (conInput) conInput.value = personaje.stats?.con || 10;
@@ -300,6 +372,7 @@ function inicializarFicha() {
         if (sabInput) sabInput.value = personaje.stats?.sab || 10;
         if (carInput) carInput.value = personaje.stats?.car || 10;
 
+        // Textareas
         if (notasInput) notasInput.value = personaje.notas || '';
         if (rasgosInput) rasgosInput.value = personaje.rasgos || '';
         if (objetosInput) objetosInput.value = personaje.objetos || '';
@@ -307,8 +380,29 @@ function inicializarFicha() {
         if (magiaInput) magiaInput.value = personaje.magia || '';
         if (trasfondoInput) trasfondoInput.value = personaje.trasfondo || '';
 
+        // Competencias de salvación
+        if (personaje.proficienciasSalvacion) {
+            if (profSaveFue) profSaveFue.checked = personaje.proficienciasSalvacion.fue || false;
+            if (profSaveDes) profSaveDes.checked = personaje.proficienciasSalvacion.des || false;
+            if (profSaveCon) profSaveCon.checked = personaje.proficienciasSalvacion.con || false;
+            if (profSaveInt) profSaveInt.checked = personaje.proficienciasSalvacion.int || false;
+            if (profSaveSab) profSaveSab.checked = personaje.proficienciasSalvacion.sab || false;
+            if (profSaveCar) profSaveCar.checked = personaje.proficienciasSalvacion.car || false;
+        }
+
+        // Herramientas
+        if (herramientasContainer) {
+            herramientasContainer.innerHTML = '';
+            if (personaje.herramientas && personaje.herramientas.length) {
+                personaje.herramientas.forEach(herramienta => {
+                    herramientasContainer.appendChild(crearCampoHerramienta(herramienta));
+                });
+            }
+        }
+
+        await actualizarSalvacionesPorClase();
         actualizarModificadores();
-        calcularPuntosGolpe(); // no necesita await aquí si no se requiere esperar
+        calcularPuntosGolpe();
     }
 
     function autoGuardar() {
@@ -346,6 +440,84 @@ function inicializarFicha() {
         localStorage.setItem('cefiro_personajes', JSON.stringify(personajes));
     }
 
+    async function actualizarSalvacionesPorClase() {
+        const clase = claseInput?.value;
+        if (!clase) return;
+
+        try {
+            const salvaciones = await window.dndData.obtenerSalvacionesPorClase(clase);
+            const saves = ['fue', 'des', 'con', 'int', 'sab', 'car'];
+            saves.forEach(save => {
+                const chk = document.getElementById(`prof-save-${save}`);
+                if (chk) {
+                    const esCompetente = salvaciones.some(s =>
+                        s.toLowerCase().includes(save) ||
+                        (save === 'fue' && s.toLowerCase().includes('str')) ||
+                        (save === 'des' && s.toLowerCase().includes('dex')) ||
+                        (save === 'con' && s.toLowerCase().includes('con')) ||
+                        (save === 'int' && s.toLowerCase().includes('int')) ||
+                        (save === 'sab' && s.toLowerCase().includes('wis')) ||
+                        (save === 'car' && s.toLowerCase().includes('cha'))
+                    );
+                    chk.checked = esCompetente;
+                }
+            });
+            actualizarSalvaciones();
+            autoGuardar();
+        } catch (error) {
+            console.error('Error actualizando salvaciones por clase:', error);
+        }
+    }
+
+    // Función para crear un campo de herramienta con botón eliminar
+    function crearCampoHerramienta(valorInicial = '') {
+        const div = document.createElement('div');
+        div.className = 'campo-dinamico';
+        div.style.display = 'flex';
+        div.style.gap = '10px';
+        div.style.marginBottom = '10px';
+        div.style.alignItems = 'center';
+
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'form-crear input-dinamico';
+        input.value = valorInicial;
+        input.style.flex = '1';
+        input.style.padding = '8px 12px';
+        input.style.border = '2px solid #33260f';
+        input.style.borderRadius = '20px';
+        input.style.backgroundColor = '#E6AB45';
+        input.style.color = '#000000';
+        input.placeholder = 'Ej: thieves\' tools, kit de herboristería...';
+
+        const btnEliminar = document.createElement('button');
+        btnEliminar.type = 'button';
+        btnEliminar.className = 'btn-eliminar-dinamico';
+        btnEliminar.textContent = '✖';
+        btnEliminar.style.padding = '8px 12px';
+        btnEliminar.style.border = '2px solid #33260f';
+        btnEliminar.style.borderRadius = '20px';
+        btnEliminar.style.backgroundColor = '#b3541c';
+        btnEliminar.style.color = '#F0D8A0';
+        btnEliminar.style.cursor = 'pointer';
+        btnEliminar.style.fontWeight = 'bold';
+
+        btnEliminar.addEventListener('click', () => {
+            div.remove();
+        });
+
+        div.appendChild(input);
+        div.appendChild(btnEliminar);
+        return div;
+    }
+
+    // Inicializar herramientas (botón de añadir)
+    if (agregarHerramientaBtn && herramientasContainer) {
+        agregarHerramientaBtn.addEventListener('click', () => {
+            herramientasContainer.appendChild(crearCampoHerramienta());
+        });
+    }
+
     // ============================================
     // CARGAR PERSONAJE SI HAY ID
     // ============================================
@@ -354,7 +526,7 @@ function inicializarFicha() {
         if (data) {
             try {
                 const personajeData = JSON.parse(data);
-                rellenar(personajeData);
+                await rellenar(personajeData);
                 console.log('✅ Personaje cargado:', personajeData.nombre);
             } catch (e) {
                 console.error('❌ Error al cargar personaje:', e);
@@ -380,6 +552,7 @@ function inicializarFicha() {
     if (claseInput) {
         claseInput.addEventListener('input', async () => {
             await calcularPuntosGolpe();
+            await actualizarSalvacionesPorClase();
             autoGuardar();
         });
     }
@@ -389,6 +562,17 @@ function inicializarFicha() {
             autoGuardar();
         });
     }
+
+    // Listeners para checkboxes de competencias de salvación
+    const saveCheckboxes = [profSaveFue, profSaveDes, profSaveCon, profSaveInt, profSaveSab, profSaveCar];
+    saveCheckboxes.forEach(chk => {
+        if (chk) {
+            chk.addEventListener('change', () => {
+                actualizarSalvaciones();
+                autoGuardar();
+            });
+        }
+    });
 
     // ============================================
     // BOTONES

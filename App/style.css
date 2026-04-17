@@ -1474,3 +1474,106 @@ td {
     scrollbar-width: thin;
     scrollbar-color: #b3541c #2a1e0f;
 }
+
+//principal seccion ch ::-webkit-search-results-decoration
+
+/* Nueva estructura de ficha */
+.ficha-grid {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.ficha-columna {
+    flex: 1;
+    min-width: 250px;
+}
+
+/* Tiradas de salvación */
+.saving-throws-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.saving-item {
+    background-color: #1a1a2e;
+    padding: 8px 12px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.saving-label {
+    font-weight: bold;
+    color: #e94560;
+    min-width: 40px;
+}
+
+.saving-mod {
+    font-weight: bold;
+    color: #fff;
+    min-width: 30px;
+    text-align: center;
+}
+
+.prof-check {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: #b3541c;
+}
+
+/* Bonificador por competencia */
+.proficiency-box {
+    background-color: #1a1a2e;
+    border-radius: 30px;
+    padding: 10px;
+    text-align: center;
+    margin-top: 15px;
+}
+
+.prof-label {
+    font-size: 0.9rem;
+    color: #a0a0a0;
+    display: block;
+}
+
+.prof-value {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #e94560;
+}
+
+/* Ajustes responsivos */
+@media (max-width: 600px) {
+    .ficha-grid {
+        flex-direction: column;
+    }
+}
+
+/* Estilo para inputs de estadísticas en la ficha */
+.stat-value {
+    background: transparent;
+    border: none;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #e94560;
+    width: 50px;
+    text-align: center;
+    font-family: inherit;
+}
+
+.stat-value:focus {
+    outline: none;
+    border-bottom: 2px solid #e94560;
+}
+
+/* Ajuste para los modificadores */
+.stat-mod {
+    font-size: 1rem;
+    color: #a0a0a0;
+    min-width: 40px;
+}

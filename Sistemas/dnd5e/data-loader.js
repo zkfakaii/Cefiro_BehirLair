@@ -54,11 +54,28 @@ async function obtenerHitDiceDeClase(claseNombre) {
     return '1d8';
 }
 
+async function obtenerSalvacionesPorClase(claseNombre) {
+    try {
+        const url = `${OPEN5E_BASE_URL}classes/?search=${encodeURIComponent(claseNombre)}&limit=1`;
+        const response = await fetch(url);
+        const data = await response.json();
+        if (data.results && data.results.length > 0) {
+            const clase = data.results[0];
+            return clase.saving_throws || clase.prof_saving_throws || [];
+        }
+    } catch (error) {
+        console.error('Error obteniendo salvaciones de clase:', error);
+    }
+    return [];
+}
+
 window.dndData = {
     cargarClases,
     cargarRazas,
     cargarBackgrounds,
     obtenerSubclasesPorClase,
-    obtenerHitDiceDeClase
+    obtenerHitDiceDeClase,
+    obtenerSalvacionesPorClase
 };
+
 console.log('✅ data-loader.js cargado (sin exports)');
