@@ -360,8 +360,18 @@ async function inicializarFicha() {
         if (subclaseInput) subclaseInput.value = personaje.subclase || '';
         if (razaInput) razaInput.value = personaje.raza || '';
         if (alineamientoInput) alineamientoInput.value = personaje.alineamiento || 'N';
-        if (pgMaxInput) pgMaxInput.value = personaje.pg_max || 10;
-        if (pgActualesInput) pgActualesInput.value = personaje.pg_actuales || 10;
+       if (pgMaxInput) {
+    const max = personaje.pg_max ?? 10;
+    pgMaxInput.value = max;
+}
+if (pgActualesInput) {
+    let actual = personaje.pg_actuales;
+    const max = personaje.pg_max ?? 10;
+    if (actual === undefined || actual === null || actual <= 0 || actual > max) {
+        actual = max;
+    }
+    pgActualesInput.value = actual;
+}
         if (caInput) caInput.value = personaje.ca || 10;
 
         // Stats
@@ -561,14 +571,14 @@ function normalizarSalvacion(nombre) {
 
     // Listeners específicos para clase y nivel (cálculo de PG)
     if (claseInput) {
-        claseInput.addEventListener('input', async () => {
+        claseInput.addEventListener('change', async () => {
             await calcularPuntosGolpe();
             await actualizarSalvacionesPorClase();
             autoGuardar();
         });
     }
     if (nivelInput) {
-        nivelInput.addEventListener('input', async () => {
+        nivelInput.addEventListener('change', async () => {
             await calcularPuntosGolpe();
             autoGuardar();
         });

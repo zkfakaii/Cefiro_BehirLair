@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
@@ -7,8 +8,10 @@
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Almendra+SC&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Almendra+SC&family=IM+Fell+English:ital@0;1&display=swap"
+        rel="stylesheet">
 </head>
+
 <body>
     <div class="container">
         <!-- Cabecera con foto y datos básicos -->
@@ -128,12 +131,16 @@
                             <div class="hp-armor">
                                 <div class="hp-box">
                                     <span class="hp-label">PG</span>
-                                    <input type="number" id="pg_max" value="10" min="1" class="hp-input" style="width: 60px;"> /
-                                    <input type="number" id="pg_actuales" value="10" min="0" class="hp-input" style="width: 60px;">
+                                    <input type="number" id="pg_actuales" value="10" min="0" class="hp-input"
+                                        style="width: 60px;">
+                                    <span style="margin: 0 5px;">/</span>
+                                    <input type="number" id="pg_max" value="10" min="1" class="hp-input"
+                                        style="width: 60px;">
                                 </div>
                                 <div class="armor-box">
                                     <span class="armor-label">CA</span>
-                                    <input type="number" id="ca" value="10" min="0" class="armor-input" style="width: 60px;">
+                                    <input type="number" id="ca" value="10" min="0" class="armor-input"
+                                        style="width: 60px;">
                                 </div>
                             </div>
 
@@ -160,7 +167,8 @@
                 <!-- SECCIÓN RASGOS -->
                 <div class="tab-panel" id="content-rasgos">
                     <h2>Rasgos</h2>
-                    <textarea id="rasgos" placeholder="Rasgos de clase, raciales, etc." style="height: 300px;"></textarea>
+                    <textarea id="rasgos" placeholder="Rasgos de clase, raciales, etc."
+                        style="height: 300px;"></textarea>
                 </div>
 
                 <!-- SECCIÓN OBJETOS -->
@@ -184,7 +192,8 @@
                 <!-- SECCIÓN TRASFONDO -->
                 <div class="tab-panel" id="content-trasfondo">
                     <h2>Trasfondo</h2>
-                    <textarea id="trasfondo" placeholder="Historia, ideales, vínculos, defectos" style="height: 300px;"></textarea>
+                    <textarea id="trasfondo" placeholder="Historia, ideales, vínculos, defectos"
+                        style="height: 300px;"></textarea>
                 </div>
             </div>
         </div>
@@ -204,4 +213,5 @@
     <script src="../sistemas/dnd5e/data-loader.js"></script>
     <script src="script.js"></script>
 </body>
+
 </html>

@@ -192,42 +192,44 @@ document.addEventListener('DOMContentLoaded', async () => {
     // ============================================
     // FUNCIÓN PARA IR AL PASO 2 (mejorada)
     // ============================================
-    window.irAlPaso2 = function() {
-        // Comprobar que todos los elementos existen
-        const elementos = {
-            nombre: document.getElementById('nombre'),
-            raza: document.getElementById('raza'),
-            clase: document.getElementById('clase'),
-            subclase: document.getElementById('subclase'),
-            nivel: document.getElementById('nivel_creacion'),
-            background: document.getElementById('background')
-        };
-
-        for (let key in elementos) {
-            if (!elementos[key]) {
-                console.error(`Error: No se encuentra el campo "${key}" en el DOM.`);
-                alert(`Error interno: falta el campo ${key}. No se puede continuar.`);
-                return;
-            }
-        }
-
-        // Obtener los valores
-        const datosPaso1 = {
-            nombre: elementos.nombre.value,
-            raza: elementos.raza.value,
-            clase: elementos.clase.value,
-            subclase: elementos.subclase.value,
-            nivel: elementos.nivel.value,
-            background: elementos.background.value,
-            stats: { ...currentStatValues }
-        };
-
-        // Guardar en localStorage
-        localStorage.setItem('cefiro_paso1', JSON.stringify(datosPaso1));
-
-        // Redirigir a la página 2 (asegúrate de que el archivo se llame así)
-        window.location.href = 'crear_2.html';
+window.irAlPaso2 = async function() {
+    // Verificar que todos los campos existen
+    const elementos = {
+        nombre: document.getElementById('nombre'),
+        raza: document.getElementById('raza'),
+        clase: document.getElementById('clase'),
+        subclase: document.getElementById('subclase'),
+        nivel: document.getElementById('nivel_creacion'),
+        background: document.getElementById('background')
     };
+    for (let key in elementos) {
+        if (!elementos[key]) {
+            console.error(`Error: No se encuentra el campo "${key}" en el DOM.`);
+            alert(`Error interno: falta el campo ${key}. No se puede continuar.`);
+            return;
+        }
+    }
+
+    // Calcular PG con regla de MEDIA justo antes de guardar
+    await calcularMediaPG();
+    const pgCalculado = parseInt(pgPreview.textContent) || 10;
+    console.log('📊 PG guardado en paso1:', pgCalculado);
+
+    const datosPaso1 = {
+        nombre: elementos.nombre.value,
+        raza: elementos.raza.value,
+        clase: elementos.clase.value,
+        subclase: elementos.subclase.value,
+        nivel: elementos.nivel.value,
+        background: elementos.background.value,
+        stats: { ...currentStatValues },
+        pg_max: pgCalculado,      // <-- Añadido
+        pg_actuales: pgCalculado  // <-- Añadido
+    };
+
+    localStorage.setItem('cefiro_paso1', JSON.stringify(datosPaso1));
+    window.location.href = 'crear_2.html';
+};
 
     // ============================================
     // EVENTOS PARA LOS BOTONES DE ESTADÍSTICAS
@@ -270,22 +272,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     // ============================================
     // CARGAR OPCIONES DE LOS SELECTORES
     // ============================================
-async function cargarOpciones() {
-    try {
-        const razas = await window.dndData.cargarRazas();
-        llenarSelect(razaSelect, razas, 'name', 'name');
+    async function cargarOpciones() {
+        try {
+            const razas = await window.dndData.cargarRazas();
+            llenarSelect(razaSelect, razas, 'name', 'name');
 
-        const clases = await window.dndData.cargarClases();
-        llenarSelect(claseSelect, clases, 'name', 'name');
+            const clases = await window.dndData.cargarClases();
+            llenarSelect(claseSelect, clases, 'name', 'name');
 
-        const backgrounds = await window.dndData.cargarBackgrounds();
-        llenarSelect(backgroundSelect, backgrounds, 'name', 'name');
+            const backgrounds = await window.dndData.cargarBackgrounds();
+            llenarSelect(backgroundSelect, backgrounds, 'name', 'name');
 
-        console.log('✅ Selectores cargados');
-    } catch (error) {
-        console.error('❌ Error cargando opciones:', error);
+            console.log('✅ Selectores cargados');
+        } catch (error) {
+            console.error('❌ Error cargando opciones:', error);
+        }
     }
-}
 
     // ============================================
     // EVENTO CAMBIO DE CLASE (cargar subclases)
@@ -311,45 +313,54 @@ async function cargarOpciones() {
     // ============================================
     // CREAR PERSONAJE
     // ============================================
-    form.addEventListener('submit', (e) => {
+    form.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        const pgCalculado = parseInt(pgPreview.textContent) || 10;
+        // Forzar el cálculo con la regla de MEDIA justo antes de leer el preview
+        await calcularMediaPG();
+        let pgCalculado = parseInt(pgPreview.textContent);
+
+        // Respaldo manual si el preview sigue siendo inválido
+        if (isNaN(pgCalculado) || pgCalculado <= 0) {
+            const claseNombre = claseSelect.options[claseSelect.selectedIndex]?.text || claseSelect.value;
+            const nivel = parseInt(nivelInput.value) || 1;
+            const con = currentStatValues.con;
+            const conMod = Math.floor((con - 10) / 2);
+            const hitDiceMap = {
+                barbarian: 12, bard: 8, cleric: 8, druid: 8, fighter: 10, monk: 8,
+                paladin: 10, ranger: 10, rogue: 8, sorcerer: 6, warlock: 8, wizard: 6
+            };
+            let dado = 8;
+            const claseLower = claseNombre.toLowerCase();
+            for (let k in hitDiceMap) if (claseLower.includes(k)) { dado = hitDiceMap[k]; break; }
+            const pgNivel1 = dado + conMod;
+            const pgNivelesExtra = (nivel - 1) * (Math.floor(dado / 2) + 1 + conMod);
+            pgCalculado = pgNivel1 + pgNivelesExtra;
+            console.log('⚠️ PG por respaldo:', pgCalculado);
+        }
+
+        console.log('✅ PG guardado:', pgCalculado);
 
         const personajeData = {
             nombre: document.getElementById('nombre').value,
             nivel: parseInt(nivelInput.value) || 1,
-            clase: claseSelect.value,
-            subclase: subclaseSelect.value,
-            raza: razaSelect.value,
-            trasfondo: backgroundSelect.value,
+            clase: claseSelect.options[claseSelect.selectedIndex]?.text || claseSelect.value,
+            subclase: subclaseSelect.options[subclaseSelect.selectedIndex]?.text || '',
+            raza: razaSelect.options[razaSelect.selectedIndex]?.text || razaSelect.value,
+            trasfondo: backgroundSelect.options[backgroundSelect.selectedIndex]?.text || backgroundSelect.value,
             alineamiento: 'N',
             pg_max: pgCalculado,
             pg_actuales: pgCalculado,
-            stats: {
-                fue: currentStatValues.fue,
-                des: currentStatValues.des,
-                con: currentStatValues.con,
-                int: currentStatValues.int,
-                sab: currentStatValues.sab,
-                car: currentStatValues.car
-            }
+            stats: { ...currentStatValues }
         };
 
         const personaje = new Personaje(personajeData);
+        if (!personaje.id) personaje.id = 'pj_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        localStorage.setItem(`cefiro_${personaje.id}`, JSON.stringify(personaje.toJSON?.() || personaje));
 
-        if (typeof guardarPersonaje === 'function') {
-            guardarPersonaje(personaje);
-        } else {
-            // Fallback manual
-            if (!personaje.id) {
-                personaje.id = 'pj_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-            }
-            localStorage.setItem(`cefiro_${personaje.id}`, JSON.stringify(personaje.toJSON?.() || personaje));
-            let personajes = JSON.parse(localStorage.getItem('cefiro_personajes') || '[]');
-            personajes.push({ id: personaje.id, nombre: personaje.nombre, nivel: personaje.nivel, clase: personaje.clase });
-            localStorage.setItem('cefiro_personajes', JSON.stringify(personajes));
-        }
+        let personajes = JSON.parse(localStorage.getItem('cefiro_personajes') || '[]');
+        personajes.push({ id: personaje.id, nombre: personaje.nombre, nivel: personaje.nivel, clase: personaje.clase });
+        localStorage.setItem('cefiro_personajes', JSON.stringify(personajes));
 
         window.location.href = `ficha.html?id=${personaje.id}`;
     });
