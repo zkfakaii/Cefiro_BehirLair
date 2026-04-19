@@ -270,22 +270,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     // ============================================
     // CARGAR OPCIONES DE LOS SELECTORES
     // ============================================
-    async function cargarOpciones() {
-        try {
-            const razas = await window.dndData.cargarRazas();
-            llenarSelect(razaSelect, razas, 'name');
+async function cargarOpciones() {
+    try {
+        const razas = await window.dndData.cargarRazas();
+        llenarSelect(razaSelect, razas, 'name', 'name');
 
-            const clases = await window.dndData.cargarClases();
-            llenarSelect(claseSelect, clases, 'name');
+        const clases = await window.dndData.cargarClases();
+        llenarSelect(claseSelect, clases, 'name', 'name');
 
-            const backgrounds = await window.dndData.cargarBackgrounds();
-            llenarSelect(backgroundSelect, backgrounds, 'name');
+        const backgrounds = await window.dndData.cargarBackgrounds();
+        llenarSelect(backgroundSelect, backgrounds, 'name', 'name');
 
-            console.log('✅ Selectores cargados');
-        } catch (error) {
-            console.error('❌ Error cargando opciones:', error);
-        }
+        console.log('✅ Selectores cargados');
+    } catch (error) {
+        console.error('❌ Error cargando opciones:', error);
     }
+}
 
     // ============================================
     // EVENTO CAMBIO DE CLASE (cargar subclases)

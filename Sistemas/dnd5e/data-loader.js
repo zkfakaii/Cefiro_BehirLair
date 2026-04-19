@@ -1,4 +1,5 @@
 // sistemas/dnd5e/data-loader.js
+
 const OPEN5E_BASE_URL = 'https://api.open5e.com/v1/';
 
 async function fetchOpen5e(endpoint) {
@@ -17,56 +18,71 @@ async function fetchOpen5e(endpoint) {
 async function cargarClases() {
     return fetchOpen5e('classes');
 }
+
 async function cargarRazas() {
     return fetchOpen5e('races');
 }
+
 async function cargarBackgrounds() {
     return fetchOpen5e('backgrounds');
 }
+
 async function obtenerSubclasesPorClase(claseNombre) {
     try {
+        // Buscar la clase por nombre para obtener sus detalles
         const searchUrl = `${OPEN5E_BASE_URL}classes/?search=${encodeURIComponent(claseNombre)}&limit=1`;
-        const searchResponse = await fetch(searchUrl);
-        const searchData = await searchResponse.json();
+        const searchResp = await fetch(searchUrl);
+        const searchData = await searchResp.json();
         if (!searchData.results?.length) return [];
         const clase = searchData.results[0];
-        const slug = clase.slug || clase.name.toLowerCase().replace(/\s+/g, '-');
+        const slug = clase.slug;
         const detailUrl = `${OPEN5E_BASE_URL}classes/${slug}/`;
-        const detailResponse = await fetch(detailUrl);
-        const claseDetail = await detailResponse.json();
-        return claseDetail.archetypes || claseDetail.subclasses || [];
+        const detailResp = await fetch(detailUrl);
+        const claseDetail = await detailResp.json();
+        return claseDetail.archetypes || [];
     } catch (error) {
         console.error('Error obteniendo subclases:', error);
         return [];
     }
 }
+
 async function obtenerHitDiceDeClase(claseNombre) {
-    try {
-        const url = `${OPEN5E_BASE_URL}classes/?search=${encodeURIComponent(claseNombre)}&limit=1`;
-        const response = await fetch(url);
-        const data = await response.json();
-        if (data.results?.length) {
-            return data.results[0].hit_dice || '1d8';
-        }
-    } catch (error) {
-        console.error('Error obteniendo hit dice:', error);
-    }
-    return '1d8';
+    const clases = await cargarClases();
+    const clase = clases.find(c => c.name.toLowerCase() === claseNombre.toLowerCase());
+    return clase?.hit_dice || '1d8';
 }
 
 async function obtenerSalvacionesPorClase(claseNombre) {
     try {
-        const url = `${OPEN5E_BASE_URL}classes/?search=${encodeURIComponent(claseNombre)}&limit=1`;
-        const response = await fetch(url);
-        const data = await response.json();
-        if (data.results && data.results.length > 0) {
-            const clase = data.results[0];
-            return clase.saving_throws || clase.prof_saving_throws || [];
-        }
+        const clases = await cargarClases();
+        const clase = clases.find(c => c.name.toLowerCase() === claseNombre.toLowerCase());
+        if (!clase) return [];
+        
+        // En v1, las salvaciones vienen como string "Strength, Constitution"
+        const raw = clase.prof_saving_throws || '';
+        if (!raw) return [];
+        
+        // Mapear nombres a abreviaturas
+        const map = {
+            'strength': 'STR',
+            'dexterity': 'DEX',
+            'constitution': 'CON',
+            'intelligence': 'INT',
+            'wisdom': 'WIS',
+            'charisma': 'CHA'
+        };
+        
+        const salvaciones = raw.split(',').map(s => {
+            const nombre = s.trim().toLowerCase();
+            return map[nombre] || null;
+        }).filter(abrev => abrev !== null);
+        
+        console.log(`🛡️ Salvaciones para ${claseNombre}:`, salvaciones);
+        return salvaciones;
     } catch (error) {
-        console.error('Error obteniendo salvaciones de clase:', error);
+        console.error('Error obteniendo salvaciones:', error);
+        return [];
     }
-    return [];
 }
 
 window.dndData = {
@@ -78,4 +94,4 @@ window.dndData = {
     obtenerSalvacionesPorClase
 };
 
-console.log('✅ data-loader.js cargado (sin exports)');
+console.log('✅ data-loader.js (v1) cargado correctamente');

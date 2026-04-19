@@ -441,17 +441,21 @@ async function inicializarFicha() {
     }
 
     // Normaliza un nombre de salvación de la API a tu formato interno ('fue', 'des', ...)
-    function normalizarSalvacion(nombre) {
-        if (!nombre) return '';
-        const n = nombre.toLowerCase().trim();
-        if (n.startsWith('str') || n.includes('fuerza')) return 'fue';
-        if (n.startsWith('dex') || n.includes('destreza')) return 'des';
-        if (n.startsWith('con') || n.includes('constitucion') || n.includes('constitución')) return 'con';
-        if (n.startsWith('int') || n.includes('inteligencia')) return 'int';
-        if (n.startsWith('wis') || n.includes('sabiduria') || n.includes('sabiduría')) return 'sab';
-        if (n.startsWith('cha') || n.includes('carisma')) return 'car';
-        return n;
-    }
+function normalizarSalvacion(nombre) {
+    if (!nombre) return '';
+    const n = nombre.toLowerCase().trim();
+    
+    // Mapeo de posibles nombres de la API v1 a tus claves internas ('fue', 'des', ...)
+    if (n.includes('str') || n.includes('fuerza') || n.includes('strength')) return 'fue';
+    if (n.includes('dex') || n.includes('destreza') || n.includes('dexterity')) return 'des';
+    if (n.includes('con') || n.includes('constitucion') || n.includes('constitución') || n.includes('constitution')) return 'con';
+    if (n.includes('int') || n.includes('inteligencia') || n.includes('intelligence')) return 'int';
+    if (n.includes('wis') || n.includes('sabiduria') || n.includes('sabiduría') || n.includes('wisdom')) return 'sab';
+    if (n.includes('cha') || n.includes('carisma') || n.includes('charisma')) return 'car';
+    
+    // Si no coincide, devolvemos el nombre original (por si acaso)
+    return n;
+}
 
     async function actualizarSalvacionesPorClase() {
         const clase = claseInput?.value;
