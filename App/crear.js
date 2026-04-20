@@ -1,4 +1,4 @@
-// app/crear.js
+// app/crear.jsa
 // Lógica para la pantalla de creación de personaje
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -28,6 +28,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
     window.currentStatValues = currentStatValues; // Para depurar desde consola
 
+
+    let modoCalculoPG = 'media';          // 'media', 'max', 'tirada'
+    let ultimaTiradaBase = 0;            // Suma de los dados sin mod CON (solo para modo tirada)
+    let ultimoNivelTirada = 1;           // Nivel con el que se hizo la última tirada
+    let ultimoDadoTirada = 8;            // Dado de golpe usado en la última tirada
+
     console.log('Valores iniciales de stats:', currentStatValues);
 
     if (!window.dndData) {
@@ -51,32 +57,58 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Caché para los dados de golpe
     const hitDiceCache = {};
 
-    async function actualizarPreviewPG() {
-        const clase = claseSelect.value;
-        const nivel = parseInt(nivelInput?.value) || 1;
+
+
+    function aplicarModoCalculoPG() {
+    if (modoCalculoPG === 'media') {
+        calcularMediaPG();
+    } else if (modoCalculoPG === 'max') {
+        calcularMaxPG();
+    } else if (modoCalculoPG === 'tirada') {
+        // Reconstruir el total usando la base guardada y el nuevo CON
         const con = currentStatValues.con;
-
-        if (!clase) {
-            pgPreview.textContent = '0';
-            return;
-        }
-
-        if (!hitDiceCache[clase]) {
-            hitDiceCache[clase] = await window.dndData.obtenerHitDiceDeClase(clase);
-        }
-        const hitDice = hitDiceCache[clase];
-        const match = hitDice.match(/d(\d+)/);
-        const dado = match ? parseInt(match[1]) : 8;
         const conMod = Math.floor((con - 10) / 2);
-
-        let total = dado + conMod; // nivel 1
-        for (let i = 2; i <= nivel; i++) {
-            total += Math.floor(Math.random() * dado) + 1 + conMod;
-        }
-
+        const total = ultimaTiradaBase + conMod * ultimoNivelTirada;
         pgPreview.textContent = total;
-        console.log(`🎲 Tirada de PG: ${total} (dado ${hitDice}, +${conMod} por CON)`);
+        console.log(`🎲 PG con tirada previa: ${total} (base ${ultimaTiradaBase} + CON ${conMod}*${ultimoNivelTirada})`);
     }
+}
+
+ async function actualizarPreviewPG() {
+    const clase = claseSelect.value;
+    const nivel = parseInt(nivelInput?.value) || 1;
+    const con = currentStatValues.con;
+    const conMod = Math.floor((con - 10) / 2);
+
+    if (!clase) {
+        pgPreview.textContent = '0';
+        return;
+    }
+
+    if (!hitDiceCache[clase]) {
+        hitDiceCache[clase] = await window.dndData.obtenerHitDiceDeClase(clase);
+    }
+    const hitDice = hitDiceCache[clase];
+    const match = hitDice.match(/d(\d+)/);
+    const dado = match ? parseInt(match[1]) : 8;
+
+    // Guardar datos de la tirada para reconstruir después
+    ultimoDadoTirada = dado;
+    ultimoNivelTirada = nivel;
+
+    let total = dado + conMod; // nivel 1
+    for (let i = 2; i <= nivel; i++) {
+        total += Math.floor(Math.random() * dado) + 1 + conMod;
+    }
+
+    // Calcular la base sin modificador de CON (para conservar la tirada)
+    const conModNivel1 = conMod;
+    const conModOtros = conMod * (nivel - 1);
+    ultimaTiradaBase = total - conModNivel1 - conModOtros;
+
+    pgPreview.textContent = total;
+    console.log(`🎲 Tirada de PG: ${total} (base ${ultimaTiradaBase}, dado ${hitDice}, +${conMod} por CON)`);
+}
 
     async function calcularMaxPG() {
         const clase = claseSelect.value;
@@ -236,37 +268,61 @@ window.irAlPaso2 = async function() {
     // ============================================
     document.querySelectorAll('.stat-up').forEach(btn => {
         btn.addEventListener('click', (e) => {
-            console.log('Click en botón +');
             e.preventDefault();
             const statRow = btn.closest('.stat-row');
             const stat = statRow.dataset.stat;
             handleStatChange(stat, 1);
-            actualizarPreviewPG(); // Recalcula PG si cambia CON
+            if (stat === 'con') {
+                aplicarModoCalculoPG();
+            }
         });
     });
 
     document.querySelectorAll('.stat-down').forEach(btn => {
         btn.addEventListener('click', (e) => {
-            console.log('Click en botón -');
             e.preventDefault();
             const statRow = btn.closest('.stat-row');
             const stat = statRow.dataset.stat;
             handleStatChange(stat, -1);
-            actualizarPreviewPG(); // Recalcula PG si cambia CON
+            if (stat === 'con') {
+                aplicarModoCalculoPG();
+            }
         });
+    });
+
+
+    claseSelect.addEventListener('change', () => {
+        if (modoCalculoPG === 'media') calcularMediaPG();
+        else if (modoCalculoPG === 'max') calcularMaxPG();
+        else if (modoCalculoPG === 'tirada') actualizarPreviewPG(); // Re-tirar al cambiar clase
+    });
+
+    nivelInput.addEventListener('input', () => {
+        if (modoCalculoPG === 'media') calcularMediaPG();
+        else if (modoCalculoPG === 'max') calcularMaxPG();
+        else if (modoCalculoPG === 'tirada') actualizarPreviewPG(); // Re-tirar al cambiar nivel
     });
 
     // ============================================
     // EVENTOS PARA BOTONES DE PG
     // ============================================
     if (btnCalcular) {
-        btnCalcular.addEventListener('click', actualizarPreviewPG);
+        btnCalcular.addEventListener('click', async () => {
+            modoCalculoPG = 'tirada';
+            await actualizarPreviewPG(); // Esto ya guarda internamente los valores base
+        });
     }
     if (btnMax) {
-        btnMax.addEventListener('click', calcularMaxPG);
+        btnMax.addEventListener('click', async () => {
+            modoCalculoPG = 'max';
+            await calcularMaxPG();
+        });
     }
     if (btnMedia) {
-        btnMedia.addEventListener('click', calcularMediaPG);
+        btnMedia.addEventListener('click', async () => {
+            modoCalculoPG = 'media';
+            await calcularMediaPG();
+        });
     }
 
     // ============================================

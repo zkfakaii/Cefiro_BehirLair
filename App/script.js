@@ -125,6 +125,8 @@ async function inicializarFicha() {
     const alineamientoInput = document.getElementById('alineamiento');
     const pgMaxInput = document.getElementById('pg_max');
     const pgActualesInput = document.getElementById('pg_actuales');
+    const pgTempInput = document.getElementById('pg_temp');
+    const btnLimpiarTemp = document.getElementById('btnLimpiarTemp');
     const caInput = document.getElementById('ca');
     const fueInput = document.getElementById('fue');
     const desInput = document.getElementById('des');
@@ -176,6 +178,7 @@ async function inicializarFicha() {
     const urlParams = new URLSearchParams(window.location.search);
     const personajeId = urlParams.get('id');
     window.personajeIdActual = personajeId;
+    let pgTemp = 0;
 
     // ============================================
     // FUNCIONES
@@ -325,6 +328,7 @@ async function inicializarFicha() {
             alineamiento: alineamientoInput?.value || 'N',
             pg_max: parseInt(pgMaxInput?.value) || 10,
             pg_actuales: parseInt(pgActualesInput?.value) || 10,
+            pg_temp: parseInt(pgTempInput?.value) || 0,
             ca: parseInt(caInput?.value) || 10,
             stats: {
                 fue: parseInt(fueInput?.value) || 10,
@@ -360,18 +364,22 @@ async function inicializarFicha() {
         if (subclaseInput) subclaseInput.value = personaje.subclase || '';
         if (razaInput) razaInput.value = personaje.raza || '';
         if (alineamientoInput) alineamientoInput.value = personaje.alineamiento || 'N';
-       if (pgMaxInput) {
-    const max = personaje.pg_max ?? 10;
-    pgMaxInput.value = max;
-}
-if (pgActualesInput) {
-    let actual = personaje.pg_actuales;
-    const max = personaje.pg_max ?? 10;
-    if (actual === undefined || actual === null || actual <= 0 || actual > max) {
-        actual = max;
-    }
-    pgActualesInput.value = actual;
-}
+        if (pgMaxInput) {
+            const max = personaje.pg_max ?? 10;
+            pgMaxInput.value = max;
+        }
+        if (pgActualesInput) {
+            let actual = personaje.pg_actuales;
+            const max = personaje.pg_max ?? 10;
+            if (actual === undefined || actual === null || actual <= 0 || actual > max) {
+                actual = max;
+            }
+            pgActualesInput.value = actual;
+        }
+
+        // Cargar PG temporales guardados (o 0 si no existe)
+        pgTemp = personaje.pg_temp || 0;
+        if (pgTempInput) pgTempInput.value = pgTemp;
         if (caInput) caInput.value = personaje.ca || 10;
 
         // Stats
@@ -451,21 +459,21 @@ if (pgActualesInput) {
     }
 
     // Normaliza un nombre de salvación de la API a tu formato interno ('fue', 'des', ...)
-function normalizarSalvacion(nombre) {
-    if (!nombre) return '';
-    const n = nombre.toLowerCase().trim();
-    
-    // Mapeo de posibles nombres de la API v1 a tus claves internas ('fue', 'des', ...)
-    if (n.includes('str') || n.includes('fuerza') || n.includes('strength')) return 'fue';
-    if (n.includes('dex') || n.includes('destreza') || n.includes('dexterity')) return 'des';
-    if (n.includes('con') || n.includes('constitucion') || n.includes('constitución') || n.includes('constitution')) return 'con';
-    if (n.includes('int') || n.includes('inteligencia') || n.includes('intelligence')) return 'int';
-    if (n.includes('wis') || n.includes('sabiduria') || n.includes('sabiduría') || n.includes('wisdom')) return 'sab';
-    if (n.includes('cha') || n.includes('carisma') || n.includes('charisma')) return 'car';
-    
-    // Si no coincide, devolvemos el nombre original (por si acaso)
-    return n;
-}
+    function normalizarSalvacion(nombre) {
+        if (!nombre) return '';
+        const n = nombre.toLowerCase().trim();
+
+        // Mapeo de posibles nombres de la API v1 a tus claves internas ('fue', 'des', ...)
+        if (n.includes('str') || n.includes('fuerza') || n.includes('strength')) return 'fue';
+        if (n.includes('dex') || n.includes('destreza') || n.includes('dexterity')) return 'des';
+        if (n.includes('con') || n.includes('constitucion') || n.includes('constitución') || n.includes('constitution')) return 'con';
+        if (n.includes('int') || n.includes('inteligencia') || n.includes('intelligence')) return 'int';
+        if (n.includes('wis') || n.includes('sabiduria') || n.includes('sabiduría') || n.includes('wisdom')) return 'sab';
+        if (n.includes('cha') || n.includes('carisma') || n.includes('charisma')) return 'car';
+
+        // Si no coincide, devolvemos el nombre original (por si acaso)
+        return n;
+    }
 
     async function actualizarSalvacionesPorClase() {
         const clase = claseInput?.value;
@@ -536,6 +544,26 @@ function normalizarSalvacion(nombre) {
     if (agregarHerramientaBtn && herramientasContainer) {
         agregarHerramientaBtn.addEventListener('click', () => {
             herramientasContainer.appendChild(crearCampoHerramienta());
+        });
+    }
+
+    // ============================================
+    // EVENTOS PARA PG TEMPORALES
+    // ============================================
+    if (pgTempInput) {
+        pgTempInput.addEventListener('input', () => {
+            pgTemp = parseInt(pgTempInput.value) || 0;
+            autoGuardar(); // Guardar automáticamente al cambiar el valor
+        });
+    }
+
+    if (btnLimpiarTemp) {
+        btnLimpiarTemp.addEventListener('click', () => {
+            if (pgTempInput) {
+                pgTempInput.value = 0;
+                pgTemp = 0;
+                autoGuardar(); // Guardar después de limpiar
+            }
         });
     }
 

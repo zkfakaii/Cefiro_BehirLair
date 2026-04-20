@@ -13,6 +13,7 @@ class Personaje {
         this.alineamiento = data.alineamiento || 'N';
         this.pg_max = data.pg_max || 10;
         this.pg_actuales = data.pg_actuales || this.pg_max;
+        this.pg_temp = data.pg_temp || 0;  
         
         this.stats = {
             fue: data.stats?.fue || 10,
@@ -51,6 +52,7 @@ class Personaje {
             alineamiento: this.alineamiento,
             pg_max: this.pg_max,
             pg_actuales: this.pg_actuales,
+            pg_temp: this.pg_temp,
             stats: { ...this.stats }
         };
     }
