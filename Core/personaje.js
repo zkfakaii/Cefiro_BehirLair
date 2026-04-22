@@ -14,6 +14,7 @@ class Personaje {
         this.pg_max = data.pg_max || 10;
         this.pg_actuales = data.pg_actuales || this.pg_max;
         this.pg_temp = data.pg_temp || 0;  
+        this.equipo = data.equipo || [];
         
         this.stats = {
             fue: data.stats?.fue || 10,
@@ -53,6 +54,7 @@ class Personaje {
             pg_max: this.pg_max,
             pg_actuales: this.pg_actuales,
             pg_temp: this.pg_temp,
+            equipo: this.equipo,
             stats: { ...this.stats }
         };
     }

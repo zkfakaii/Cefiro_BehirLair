@@ -1577,3 +1577,15 @@ td {
     color: #a0a0a0;
     min-width: 40px;
 }
+
+/* buscar objeto */
+
+#buscar-objeto {
+    cursor: pointer;
+    background-color: #E6AB45;
+}
+#buscar-objeto:focus {
+    outline: none;
+    border-color: #d48b4a;
+    box-shadow: inset 3px 3px 8px rgba(0,0,0,0.2), 0 0 0 3px rgba(212, 139, 74, 0.3);
+}

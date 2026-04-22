@@ -19,6 +19,29 @@ document.addEventListener('DOMContentLoaded', () => {
     const clase = datosPaso1.clase;
     const background = datosPaso1.background;
 
+    // ============================================
+    // EQUIPO INICIAL - Carga temporal
+    // ============================================
+    const equipoGuardado = localStorage.getItem('cefiro_equipo_temp');
+    let inventarioCustom = equipoGuardado ? JSON.parse(equipoGuardado) : [];
+
+    function guardarEquipoTemporal() {
+        localStorage.setItem('cefiro_equipo_temp', JSON.stringify(inventarioCustom));
+    }
+
+    const panelCustom = document.getElementById('panel-equipo-custom');
+    const tipoEquipoRadios = document.getElementsByName('tipo-equipo');
+
+    // Si ya hay equipo, marcar radio "Custom" y mostrar panel
+    if (inventarioCustom.length > 0) {
+        const radioCustom = document.querySelector('input[name="tipo-equipo"][value="custom"]');
+        if (radioCustom) {
+            radioCustom.checked = true;
+            if (panelCustom) panelCustom.style.display = 'block';
+            renderizarInventario(); // Mostrar el inventario al cargar
+        }
+    }
+
     // Calcular bono de competencia
     function calcularBonoCompetencia(nivel) {
         return Math.floor((nivel - 1) / 4) + 2;
@@ -52,7 +75,9 @@ document.addEventListener('DOMContentLoaded', () => {
         return Math.floor((valor - 10) / 2);
     }
 
-    // MAPA MANUAL DE COMPETENCIAS POR CLASE (SRD)
+    // ============================================
+    // MAPAS DE COMPETENCIAS Y HERRAMIENTAS (SRD)
+    // ============================================
     const competenciasClase = {
         'Bárbaro': 'Elige 2 entre: Atletismo, Intimidación, Naturaleza, Percepción, Supervivencia',
         'Barbarian': 'Elige 2 entre: Atletismo, Intimidación, Naturaleza, Percepción, Supervivencia',
@@ -78,7 +103,6 @@ document.addEventListener('DOMContentLoaded', () => {
         'Rogue': 'Elige 4 entre: Acrobacias, Atletismo, Engaño, Perspicacia, Intimidación, Investigación, Percepción, Interpretación, Persuasión, Juego de manos, Sigilo'
     };
 
-    // MAPA MANUAL DE COMPETENCIAS POR BACKGROUND (SRD)
     const competenciasBackground = {
         'Acolyte': 'Religión, y una entre Perspicacia o Persuasión',
         'Charlatan': 'Engaño, y una entre Juego de manos o Sigilo',
@@ -101,7 +125,6 @@ document.addEventListener('DOMContentLoaded', () => {
         'Urchin': 'Juego de manos, y una entre Sigilo o Investigación'
     };
 
-    // MAPA DE HERRAMIENTAS POR CLASE (texto informativo)
     const herramientasClase = {
         'Bárbaro': 'Ninguna herramienta adicional',
         'Barbarian': 'Ninguna herramienta adicional',
@@ -127,444 +150,131 @@ document.addEventListener('DOMContentLoaded', () => {
         'Rogue': 'Thieves\' tools'
     };
 
-    // MAPA DE HERRAMIENTAS POR BACKGROUND (SRD 2024)
-const herramientasBackground = {
-    'Acolyte': 'Calligrapher\'s Supplies',
-    'Artisan': 'Artisan\'s Tools (your choice)',
-    'Charlatan': 'Forgery Kit',
-    'Criminal': 'Thieves\' Tools',
-    'Entertainer': 'Musical Instrument (your choice)',
-    'Farmer': 'Carpenter\'s Tools',
-    'Guard': 'Gaming Set (your choice)',
-    'Guide': 'Cartographer\'s Tools',
-    'Hermit': 'Herbalism Kit',
-    'Merchant': 'Navigator\'s Tools',
-    'Noble': 'Gaming Set (your choice)',
-    'Sage': 'Calligrapher\'s Supplies',
-    'Sailor': 'Navigator\'s Tools',
-    'Scribe': 'Calligrapher\'s Supplies',
-    'Soldier': 'Gaming Set (your choice)',
-    'Wayfarer': 'Thieves\' Tools'
-};
+    const herramientasBackground = {
+        'Acolyte': 'Calligrapher\'s Supplies',
+        'Artisan': 'Artisan\'s Tools (your choice)',
+        'Charlatan': 'Forgery Kit',
+        'Criminal': 'Thieves\' Tools',
+        'Entertainer': 'Musical Instrument (your choice)',
+        'Farmer': 'Carpenter\'s Tools',
+        'Guard': 'Gaming Set (your choice)',
+        'Guide': 'Cartographer\'s Tools',
+        'Hermit': 'Herbalism Kit',
+        'Merchant': 'Navigator\'s Tools',
+        'Noble': 'Gaming Set (your choice)',
+        'Sage': 'Calligrapher\'s Supplies',
+        'Sailor': 'Navigator\'s Tools',
+        'Scribe': 'Calligrapher\'s Supplies',
+        'Soldier': 'Gaming Set (your choice)',
+        'Wayfarer': 'Thieves\' Tools'
+    };
 
-  // Base de datos completa de herramientas del SRD
-const herramientasDB = [
-    // === HERRAMIENTAS DE ARTESANO ===
-    { 
-        nombre: "Alchemist's supplies", 
-        tipo: "Artisan's tools", 
-        precio: "50 gp", 
-        peso: "8 lb.", 
-        descripcion: "Permite crear ácido, fuego de alquimista y pociones. Útil para identificar sustancias.", 
-        habilidad: "Intelligence", 
-        utilizar: "Identificar una sustancia (DC 15) o iniciar fuego (DC 15)" 
-    },
-    { 
-        nombre: "Brewer's supplies", 
-        tipo: "Artisan's tools", 
-        precio: "20 gp", 
-        peso: "9 lb.", 
-        descripcion: "Para elaborar cerveza, vino y otras bebidas alcohólicas.", 
-        habilidad: "Intelligence", 
-        utilizar: "Detectar venenos en bebidas (DC 15)" 
-    },
-    { 
-        nombre: "Calligrapher's supplies", 
-        tipo: "Artisan's tools", 
-        precio: "10 gp", 
-        peso: "5 lb.", 
-        descripcion: "Permite escribir e identificar caligrafías.", 
-        habilidad: "Dexterity", 
-        utilizar: "Forjar documentos (DC 15), identificar escritor (DC 10)" 
-    },
-    { 
-        nombre: "Carpenter's tools", 
-        tipo: "Artisan's tools", 
-        precio: "8 gp", 
-        peso: "6 lb.", 
-        descripcion: "Para trabajar la madera.", 
-        habilidad: "Strength", 
-        utilizar: "Construir objetos de madera, apuntalar puertas (DC 15)" 
-    },
-    { 
-        nombre: "Cartographer's tools", 
-        tipo: "Artisan's tools", 
-        precio: "15 gp", 
-        peso: "6 lb.", 
-        descripcion: "Para crear mapas y comprender representaciones del terreno.", 
-        habilidad: "Wisdom", 
-        utilizar: "Crear mapas precisos, interpretar mapas antiguos (DC 15)" 
-    },
-    { 
-        nombre: "Cobbler's tools", 
-        tipo: "Artisan's tools", 
-        precio: "5 gp", 
-        peso: "5 lb.", 
-        descripcion: "Para reparar y crear calzado.", 
-        habilidad: "Dexterity", 
-        utilizar: "Ocultar mensajes en suelas de zapatos (DC 15)" 
-    },
-    { 
-        nombre: "Cook's utensils", 
-        tipo: "Artisan's tools", 
-        precio: "1 gp", 
-        peso: "8 lb.", 
-        descripcion: "Utensilios para preparar comidas y detectar alteraciones en alimentos.", 
-        habilidad: "Wisdom", 
-        utilizar: "Detectar comida envenenada (DC 15), crear platos exquisitos" 
-    },
-    { 
-        nombre: "Glassblower's tools", 
-        tipo: "Artisan's tools", 
-        precio: "30 gp", 
-        peso: "5 lb.", 
-        descripcion: "Para trabajar el vidrio y crear objetos de cristal.", 
-        habilidad: "Dexterity", 
-        utilizar: "Crear objetos de vidrio, identificar puntos débiles en cristal (DC 15)" 
-    },
-    { 
-        nombre: "Jeweler's tools", 
-        tipo: "Artisan's tools", 
-        precio: "25 gp", 
-        peso: "2 lb.", 
-        descripcion: "Para trabajar metales preciosos y gemas.", 
-        habilidad: "Intelligence", 
-        utilizar: "Identificar piedras preciosas, valorar joyas (DC 15)" 
-    },
-    { 
-        nombre: "Leatherworker's tools", 
-        tipo: "Artisan's tools", 
-        precio: "5 gp", 
-        peso: "5 lb.", 
-        descripcion: "Para trabajar el cuero y crear prendas de cuero.", 
-        habilidad: "Dexterity", 
-        utilizar: "Reparar armaduras de cuero, crear objetos de cuero" 
-    },
-    { 
-        nombre: "Mason's tools", 
-        tipo: "Artisan's tools", 
-        precio: "10 gp", 
-        peso: "8 lb.", 
-        descripcion: "Para trabajar la piedra y detectar construcciones inseguras.", 
-        habilidad: "Strength", 
-        utilizar: "Encontrar puntos débiles en muros de piedra (DC 15), construir estructuras" 
-    },
-    { 
-        nombre: "Painter's supplies", 
-        tipo: "Artisan's tools", 
-        precio: "10 gp", 
-        peso: "5 lb.", 
-        descripcion: "Suministros para pintar y crear obras de arte.", 
-        habilidad: "Charisma", 
-        utilizar: "Crear retratos, falsificar pinturas (DC 15)" 
-    },
-    { 
-        nombre: "Potter's tools", 
-        tipo: "Artisan's tools", 
-        precio: "10 gp", 
-        peso: "3 lb.", 
-        descripcion: "Para trabajar la cerámica y crear vasijas.", 
-        habilidad: "Dexterity", 
-        utilizar: "Crear recipientes de cerámica, ocultar objetos en vasijas" 
-    },
-    { 
-        nombre: "Smith's tools", 
-        tipo: "Artisan's tools", 
-        precio: "20 gp", 
-        peso: "8 lb.", 
-        descripcion: "Para trabajar el metal y forjar armas y armaduras.", 
-        habilidad: "Strength", 
-        utilizar: "Reparar armaduras metálicas, forjar objetos de metal, abrir cerraduras de metal (DC 20)" 
-    },
-    { 
-        nombre: "Tinker's tools", 
-        tipo: "Artisan's tools", 
-        precio: "50 gp", 
-        peso: "10 lb.", 
-        descripcion: "Para reparar mecanismos y crear pequeños artilugios.", 
-        habilidad: "Dexterity", 
-        utilizar: "Reparar mecanismos, crear juguetes mecánicos, desactivar mecanismos simples (DC 15)" 
-    },
-    { 
-        nombre: "Weaver's tools", 
-        tipo: "Artisan's tools", 
-        precio: "1 gp", 
-        peso: "5 lb.", 
-        descripcion: "Para trabajar textiles y crear tejidos.", 
-        habilidad: "Dexterity", 
-        utilizar: "Crear ropa, identificar telas por textura (DC 10)" 
-    },
-    { 
-        nombre: "Woodcarver's tools", 
-        tipo: "Artisan's tools", 
-        precio: "1 gp", 
-        peso: "5 lb.", 
-        descripcion: "Para tallar madera y crear objetos de madera.", 
-        habilidad: "Dexterity", 
-        utilizar: "Tallar figuras, crear flechas, identificar tipos de madera (DC 10)" 
-    },
+    // Base de datos completa de herramientas del SRD
+    const herramientasDB = [
+        { nombre: "Alchemist's supplies", tipo: "Artisan's tools", precio: "50 gp", peso: "8 lb.", descripcion: "Permite crear ácido, fuego de alquimista y pociones. Útil para identificar sustancias.", habilidad: "Intelligence", utilizar: "Identificar una sustancia (DC 15) o iniciar fuego (DC 15)" },
+        { nombre: "Brewer's supplies", tipo: "Artisan's tools", precio: "20 gp", peso: "9 lb.", descripcion: "Para elaborar cerveza, vino y otras bebidas alcohólicas.", habilidad: "Intelligence", utilizar: "Detectar venenos en bebidas (DC 15)" },
+        { nombre: "Calligrapher's supplies", tipo: "Artisan's tools", precio: "10 gp", peso: "5 lb.", descripcion: "Permite escribir e identificar caligrafías.", habilidad: "Dexterity", utilizar: "Forjar documentos (DC 15), identificar escritor (DC 10)" },
+        { nombre: "Carpenter's tools", tipo: "Artisan's tools", precio: "8 gp", peso: "6 lb.", descripcion: "Para trabajar la madera.", habilidad: "Strength", utilizar: "Construir objetos de madera, apuntalar puertas (DC 15)" },
+        { nombre: "Cartographer's tools", tipo: "Artisan's tools", precio: "15 gp", peso: "6 lb.", descripcion: "Para crear mapas y comprender representaciones del terreno.", habilidad: "Wisdom", utilizar: "Crear mapas precisos, interpretar mapas antiguos (DC 15)" },
+        { nombre: "Cobbler's tools", tipo: "Artisan's tools", precio: "5 gp", peso: "5 lb.", descripcion: "Para reparar y crear calzado.", habilidad: "Dexterity", utilizar: "Ocultar mensajes en suelas de zapatos (DC 15)" },
+        { nombre: "Cook's utensils", tipo: "Artisan's tools", precio: "1 gp", peso: "8 lb.", descripcion: "Utensilios para preparar comidas y detectar alteraciones en alimentos.", habilidad: "Wisdom", utilizar: "Detectar comida envenenada (DC 15), crear platos exquisitos" },
+        { nombre: "Glassblower's tools", tipo: "Artisan's tools", precio: "30 gp", peso: "5 lb.", descripcion: "Para trabajar el vidrio y crear objetos de cristal.", habilidad: "Dexterity", utilizar: "Crear objetos de vidrio, identificar puntos débiles en cristal (DC 15)" },
+        { nombre: "Jeweler's tools", tipo: "Artisan's tools", precio: "25 gp", peso: "2 lb.", descripcion: "Para trabajar metales preciosos y gemas.", habilidad: "Intelligence", utilizar: "Identificar piedras preciosas, valorar joyas (DC 15)" },
+        { nombre: "Leatherworker's tools", tipo: "Artisan's tools", precio: "5 gp", peso: "5 lb.", descripcion: "Para trabajar el cuero y crear prendas de cuero.", habilidad: "Dexterity", utilizar: "Reparar armaduras de cuero, crear objetos de cuero" },
+        { nombre: "Mason's tools", tipo: "Artisan's tools", precio: "10 gp", peso: "8 lb.", descripcion: "Para trabajar la piedra y detectar construcciones inseguras.", habilidad: "Strength", utilizar: "Encontrar puntos débiles en muros de piedra (DC 15), construir estructuras" },
+        { nombre: "Painter's supplies", tipo: "Artisan's tools", precio: "10 gp", peso: "5 lb.", descripcion: "Suministros para pintar y crear obras de arte.", habilidad: "Charisma", utilizar: "Crear retratos, falsificar pinturas (DC 15)" },
+        { nombre: "Potter's tools", tipo: "Artisan's tools", precio: "10 gp", peso: "3 lb.", descripcion: "Para trabajar la cerámica y crear vasijas.", habilidad: "Dexterity", utilizar: "Crear recipientes de cerámica, ocultar objetos en vasijas" },
+        { nombre: "Smith's tools", tipo: "Artisan's tools", precio: "20 gp", peso: "8 lb.", descripcion: "Para trabajar el metal y forjar armas y armaduras.", habilidad: "Strength", utilizar: "Reparar armaduras metálicas, forjar objetos de metal, abrir cerraduras de metal (DC 20)" },
+        { nombre: "Tinker's tools", tipo: "Artisan's tools", precio: "50 gp", peso: "10 lb.", descripcion: "Para reparar mecanismos y crear pequeños artilugios.", habilidad: "Dexterity", utilizar: "Reparar mecanismos, crear juguetes mecánicos, desactivar mecanismos simples (DC 15)" },
+        { nombre: "Weaver's tools", tipo: "Artisan's tools", precio: "1 gp", peso: "5 lb.", descripcion: "Para trabajar textiles y crear tejidos.", habilidad: "Dexterity", utilizar: "Crear ropa, identificar telas por textura (DC 10)" },
+        { nombre: "Woodcarver's tools", tipo: "Artisan's tools", precio: "1 gp", peso: "5 lb.", descripcion: "Para tallar madera y crear objetos de madera.", habilidad: "Dexterity", utilizar: "Tallar figuras, crear flechas, identificar tipos de madera (DC 10)" },
+        { nombre: "Disguise kit", tipo: "Kit", precio: "25 gp", peso: "3 lb.", descripcion: "Incluye maquillaje, pelucas y accesorios para cambiar la apariencia.", habilidad: "Charisma", utilizar: "Crear un disfraz (DC 15)" },
+        { nombre: "Forgery kit", tipo: "Kit", precio: "15 gp", peso: "5 lb.", descripcion: "Papeles especiales, tintas y sellos para falsificar documentos.", habilidad: "Intelligence", utilizar: "Falsificar documento (DC 15)" },
+        { nombre: "Herbalism kit", tipo: "Kit", precio: "5 gp", peso: "3 lb.", descripcion: "Para identificar y preparar plantas medicinales y venenos. Necesario para crear antitoxinas y pociones de curación.", habilidad: "Intelligence", utilizar: "Identificar planta (DC 15), preparar antídoto (DC 15)" },
+        { nombre: "Poisoner's kit", tipo: "Kit", precio: "50 gp", peso: "2 lb.", descripcion: "Para extraer y aplicar venenos.", habilidad: "Intelligence", utilizar: "Aplicar veneno (DC 15), identificar veneno (DC 15)" },
+        { nombre: "Dice set", tipo: "Gaming set", precio: "1 sp", peso: "-", descripcion: "Juego de dados para juegos de azar.", habilidad: "Wisdom", utilizar: "Hacer trampa (DC 15) o jugar limpiamente." },
+        { nombre: "Playing card set", tipo: "Gaming set", precio: "5 sp", peso: "-", descripcion: "Baraja para juegos de cartas.", habilidad: "Wisdom", utilizar: "Hacer trampa (DC 15) o jugar limpiamente." },
+        { nombre: "Three-Dragon Ante set", tipo: "Gaming set", precio: "1 gp", peso: "-", descripcion: "Juego de cartas popular en tabernas.", habilidad: "Wisdom", utilizar: "Jugar profesionalmente (DC 15)" },
+        { nombre: "Bagpipes", tipo: "Musical instrument", precio: "30 gp", peso: "6 lb.", descripcion: "Instrumento de viento de origen tribal.", habilidad: "Charisma", utilizar: "Interpretar (DC 15)" },
+        { nombre: "Drum", tipo: "Musical instrument", precio: "6 gp", peso: "3 lb.", descripcion: "Instrumento de percusión.", habilidad: "Charisma", utilizar: "Interpretar (DC 15)" },
+        { nombre: "Dulcimer", tipo: "Musical instrument", precio: "25 gp", peso: "10 lb.", descripcion: "Instrumento de cuerda percutida.", habilidad: "Charisma", utilizar: "Interpretar (DC 15)" },
+        { nombre: "Flute", tipo: "Musical instrument", precio: "2 gp", peso: "1 lb.", descripcion: "Instrumento de viento de madera.", habilidad: "Charisma", utilizar: "Interpretar (DC 15)" },
+        { nombre: "Horn", tipo: "Musical instrument", precio: "3 gp", peso: "2 lb.", descripcion: "Instrumento de viento-metal.", habilidad: "Charisma", utilizar: "Interpretar (DC 15)" },
+        { nombre: "Lute", tipo: "Musical instrument", precio: "35 gp", peso: "2 lb.", descripcion: "Instrumento de cuerda pulsada, favorito de bardos.", habilidad: "Charisma", utilizar: "Interpretar (DC 15)" },
+        { nombre: "Lyre", tipo: "Musical instrument", precio: "30 gp", peso: "2 lb.", descripcion: "Instrumento de cuerda similar a una pequeña arpa.", habilidad: "Charisma", utilizar: "Interpretar (DC 15)" },
+        { nombre: "Pan flute", tipo: "Musical instrument", precio: "12 gp", peso: "2 lb.", descripcion: "Conjunto de flautas de diferentes longitudes.", habilidad: "Charisma", utilizar: "Interpretar (DC 15)" },
+        { nombre: "Shawm", tipo: "Musical instrument", precio: "2 gp", peso: "1 lb.", descripcion: "Instrumento de viento de lengüeta, precursor del oboe.", habilidad: "Charisma", utilizar: "Interpretar (DC 15)" },
+        { nombre: "Viol", tipo: "Musical instrument", precio: "30 gp", peso: "1 lb.", descripcion: "Instrumento de cuerda frotada, antecesor del violín.", habilidad: "Charisma", utilizar: "Interpretar (DC 15)" },
+        { nombre: "Navigator's tools", tipo: "Tool", precio: "25 gp", peso: "2 lb.", descripcion: "Incluye brújula, mapas y sextante para navegación marítima.", habilidad: "Wisdom", utilizar: "Determinar posición (DC 15), evitar perderse en el mar" },
+        { nombre: "Thieves' tools", tipo: "Tool", precio: "25 gp", peso: "1 lb.", descripcion: "Incluye ganzúas, lima, espejo pequeño, tijeras y alicates para abrir cerraduras y desarmar trampas.", habilidad: "Dexterity", utilizar: "Abrir cerradura (DC 15), desarmar trampa (DC 15)" }
+    ];
 
-    // === KITS ===
-    { 
-        nombre: "Disguise kit", 
-        tipo: "Kit", 
-        precio: "25 gp", 
-        peso: "3 lb.", 
-        descripcion: "Incluye maquillaje, pelucas y accesorios para cambiar la apariencia.", 
-        habilidad: "Charisma", 
-        utilizar: "Crear un disfraz (DC 15)" 
-    },
-    { 
-        nombre: "Forgery kit", 
-        tipo: "Kit", 
-        precio: "15 gp", 
-        peso: "5 lb.", 
-        descripcion: "Papeles especiales, tintas y sellos para falsificar documentos.", 
-        habilidad: "Intelligence", 
-        utilizar: "Falsificar documento (DC 15)" 
-    },
-    { 
-        nombre: "Herbalism kit", 
-        tipo: "Kit", 
-        precio: "5 gp", 
-        peso: "3 lb.", 
-        descripcion: "Para identificar y preparar plantas medicinales y venenos. Necesario para crear antitoxinas y pociones de curación.", 
-        habilidad: "Intelligence", 
-        utilizar: "Identificar planta (DC 15), preparar antídoto (DC 15)" 
-    },
-    { 
-        nombre: "Poisoner's kit", 
-        tipo: "Kit", 
-        precio: "50 gp", 
-        peso: "2 lb.", 
-        descripcion: "Para extraer y aplicar venenos.", 
-        habilidad: "Intelligence", 
-        utilizar: "Aplicar veneno (DC 15), identificar veneno (DC 15)" 
-    },
+    // ============================================
+    // MODAL DE CONSULTA DE HERRAMIENTAS
+    // ============================================
+    const modal = document.getElementById('modal-herramientas');
+    const btnAbrirModal = document.getElementById('btn-ver-herramientas');
+    const btnCerrar = document.getElementById('cerrar-modal');
+    const listaContainer = document.getElementById('lista-herramientas');
 
-    // === JUEGOS ===
-    { 
-        nombre: "Dice set", 
-        tipo: "Gaming set", 
-        precio: "1 sp", 
-        peso: "-", 
-        descripcion: "Juego de dados para juegos de azar.", 
-        habilidad: "Wisdom", 
-        utilizar: "Hacer trampa (DC 15) o jugar limpiamente." 
-    },
-    { 
-        nombre: "Playing card set", 
-        tipo: "Gaming set", 
-        precio: "5 sp", 
-        peso: "-", 
-        descripcion: "Baraja para juegos de cartas.", 
-        habilidad: "Wisdom", 
-        utilizar: "Hacer trampa (DC 15) o jugar limpiamente." 
-    },
-    { 
-        nombre: "Three-Dragon Ante set", 
-        tipo: "Gaming set", 
-        precio: "1 gp", 
-        peso: "-", 
-        descripcion: "Juego de cartas popular en tabernas.", 
-        habilidad: "Wisdom", 
-        utilizar: "Jugar profesionalmente (DC 15)" 
-    },
-
-    // === INSTRUMENTOS MUSICALES ===
-    { 
-        nombre: "Bagpipes", 
-        tipo: "Musical instrument", 
-        precio: "30 gp", 
-        peso: "6 lb.", 
-        descripcion: "Instrumento de viento de origen tribal.", 
-        habilidad: "Charisma", 
-        utilizar: "Interpretar (DC 15)" 
-    },
-    { 
-        nombre: "Drum", 
-        tipo: "Musical instrument", 
-        precio: "6 gp", 
-        peso: "3 lb.", 
-        descripcion: "Instrumento de percusión.", 
-        habilidad: "Charisma", 
-        utilizar: "Interpretar (DC 15)" 
-    },
-    { 
-        nombre: "Dulcimer", 
-        tipo: "Musical instrument", 
-        precio: "25 gp", 
-        peso: "10 lb.", 
-        descripcion: "Instrumento de cuerda percutida.", 
-        habilidad: "Charisma", 
-        utilizar: "Interpretar (DC 15)" 
-    },
-    { 
-        nombre: "Flute", 
-        tipo: "Musical instrument", 
-        precio: "2 gp", 
-        peso: "1 lb.", 
-        descripcion: "Instrumento de viento de madera.", 
-        habilidad: "Charisma", 
-        utilizar: "Interpretar (DC 15)" 
-    },
-    { 
-        nombre: "Horn", 
-        tipo: "Musical instrument", 
-        precio: "3 gp", 
-        peso: "2 lb.", 
-        descripcion: "Instrumento de viento-metal.", 
-        habilidad: "Charisma", 
-        utilizar: "Interpretar (DC 15)" 
-    },
-    { 
-        nombre: "Lute", 
-        tipo: "Musical instrument", 
-        precio: "35 gp", 
-        peso: "2 lb.", 
-        descripcion: "Instrumento de cuerda pulsada, favorito de bardos.", 
-        habilidad: "Charisma", 
-        utilizar: "Interpretar (DC 15)" 
-    },
-    { 
-        nombre: "Lyre", 
-        tipo: "Musical instrument", 
-        precio: "30 gp", 
-        peso: "2 lb.", 
-        descripcion: "Instrumento de cuerda similar a una pequeña arpa.", 
-        habilidad: "Charisma", 
-        utilizar: "Interpretar (DC 15)" 
-    },
-    { 
-        nombre: "Pan flute", 
-        tipo: "Musical instrument", 
-        precio: "12 gp", 
-        peso: "2 lb.", 
-        descripcion: "Conjunto de flautas de diferentes longitudes.", 
-        habilidad: "Charisma", 
-        utilizar: "Interpretar (DC 15)" 
-    },
-    { 
-        nombre: "Shawm", 
-        tipo: "Musical instrument", 
-        precio: "2 gp", 
-        peso: "1 lb.", 
-        descripcion: "Instrumento de viento de lengüeta, precursor del oboe.", 
-        habilidad: "Charisma", 
-        utilizar: "Interpretar (DC 15)" 
-    },
-    { 
-        nombre: "Viol", 
-        tipo: "Musical instrument", 
-        precio: "30 gp", 
-        peso: "1 lb.", 
-        descripcion: "Instrumento de cuerda frotada, antecesor del violín.", 
-        habilidad: "Charisma", 
-        utilizar: "Interpretar (DC 15)" 
-    },
-
-    // === OTRAS HERRAMIENTAS ===
-    { 
-        nombre: "Navigator's tools", 
-        tipo: "Tool", 
-        precio: "25 gp", 
-        peso: "2 lb.", 
-        descripcion: "Incluye brújula, mapas y sextante para navegación marítima.", 
-        habilidad: "Wisdom", 
-        utilizar: "Determinar posición (DC 15), evitar perderse en el mar" 
-    },
-    { 
-        nombre: "Thieves' tools", 
-        tipo: "Tool", 
-        precio: "25 gp", 
-        peso: "1 lb.", 
-        descripcion: "Incluye ganzúas, lima, espejo pequeño, tijeras y alicates para abrir cerraduras y desarmar trampas.", 
-        habilidad: "Dexterity", 
-        utilizar: "Abrir cerradura (DC 15), desarmar trampa (DC 15)" 
-    }
-];
-    
-// ============================================
-// MODAL DE CONSULTA DE HERRAMIENTAS
-// ============================================
-const modal = document.getElementById('modal-herramientas');
-const btnAbrirModal = document.getElementById('btn-ver-herramientas');
-const btnCerrar = document.getElementById('cerrar-modal');
-const listaContainer = document.getElementById('lista-herramientas');
-
-function cerrarModal() {
-    modal.style.display = 'none';
-}
-
-function mostrarDetalle(herramienta) {
-    // Si ya hay un detalle visible, lo ocultamos
-    const visible = document.querySelector('.herramienta-detalle.visible');
-    if (visible) visible.classList.remove('visible');
-
-    // Buscamos el detalle correspondiente a este item
-    const detalle = herramienta.querySelector('.herramienta-detalle');
-    if (detalle) detalle.classList.add('visible');
-}
-
-function construirListaHerramientas() {
-    listaContainer.innerHTML = '';
-    herramientasDB.sort((a, b) => a.nombre.localeCompare(b.nombre)).forEach(herramienta => {
-        const item = document.createElement('div');
-        item.className = 'herramienta-item';
-
-        const nombre = document.createElement('strong');
-        nombre.textContent = herramienta.nombre;
-        item.appendChild(nombre);
-
-        const detalle = document.createElement('div');
-        detalle.className = 'herramienta-detalle';
-        detalle.innerHTML = `
-            <p><strong>Tipo:</strong> ${herramienta.tipo}</p>
-            <p><strong>Precio:</strong> ${herramienta.precio}</p>
-            <p><strong>Peso:</strong> ${herramienta.peso}</p>
-            <p><strong>Habilidad asociada:</strong> ${herramienta.habilidad}</p>
-            <p><strong>Utilizar:</strong> ${herramienta.utilizar}</p>
-            <p><strong>Descripción:</strong> ${herramienta.descripcion}</p>
-        `;
-
-        item.appendChild(detalle);
-        item.addEventListener('click', () => mostrarDetalle(item));
-        listaContainer.appendChild(item);
-    });
-}
-
-if (btnAbrirModal) {
-    btnAbrirModal.addEventListener('click', () => {
-        construirListaHerramientas();
-        modal.classList.add('show');
-    });
-}
-
-if (btnCerrar) {
     function cerrarModal() {
         modal.classList.remove('show');
     }
-}
 
-// Cerrar si se hace clic fuera del contenido
-window.addEventListener('click', (e) => {
-    if (e.target === modal) cerrarModal();
-});
+    function mostrarDetalle(herramienta) {
+        const visible = document.querySelector('.herramienta-detalle.visible');
+        if (visible) visible.classList.remove('visible');
+        const detalle = herramienta.querySelector('.herramienta-detalle');
+        if (detalle) detalle.classList.add('visible');
+    }
+
+    function construirListaHerramientas() {
+        listaContainer.innerHTML = '';
+        herramientasDB.sort((a, b) => a.nombre.localeCompare(b.nombre)).forEach(herramienta => {
+            const item = document.createElement('div');
+            item.className = 'herramienta-item';
+            const nombre = document.createElement('strong');
+            nombre.textContent = herramienta.nombre;
+            item.appendChild(nombre);
+            const detalle = document.createElement('div');
+            detalle.className = 'herramienta-detalle';
+            detalle.innerHTML = `
+                <p><strong>Tipo:</strong> ${herramienta.tipo}</p>
+                <p><strong>Precio:</strong> ${herramienta.precio}</p>
+                <p><strong>Peso:</strong> ${herramienta.peso}</p>
+                <p><strong>Habilidad asociada:</strong> ${herramienta.habilidad}</p>
+                <p><strong>Utilizar:</strong> ${herramienta.utilizar}</p>
+                <p><strong>Descripción:</strong> ${herramienta.descripcion}</p>
+            `;
+            item.appendChild(detalle);
+            item.addEventListener('click', () => mostrarDetalle(item));
+            listaContainer.appendChild(item);
+        });
+    }
+
+    if (btnAbrirModal) {
+        btnAbrirModal.addEventListener('click', () => {
+            construirListaHerramientas();
+            modal.classList.add('show');
+        });
+    }
+    if (btnCerrar) btnCerrar.addEventListener('click', cerrarModal);
+    window.addEventListener('click', (e) => { if (e.target === modal) cerrarModal(); });
+
+    // Textos informativos
     const textoClase = competenciasClase[clase] || 'Competencias de clase no especificadas. Elige libremente.';
     const textoBackground = competenciasBackground[background] || 'Competencias de background no especificadas. Elige libremente.';
     const textoHerramientasClase = herramientasClase[clase] || 'No se especifican herramientas para esta clase.';
-const textoHerramientasBg = herramientasBackground[background] || 'No se especifican herramientas para este background.';
+    const textoHerramientasBg = herramientasBackground[background] || 'No se especifican herramientas para este background.';
 
-    // Mostrar el texto informativo de herramientas
-  // Mostrar el texto informativo de herramientas (clase + background)
-const textoHerramientasElem = document.getElementById('texto-herramientas');
-if (textoHerramientasElem) {
-    textoHerramientasElem.innerHTML = `
-        <strong>Herramientas de clase:</strong> ${textoHerramientasClase}<br>
-        <strong>Herramientas de background (${background}):</strong> ${textoHerramientasBg}
-    `;
-}
-    // Mostrar información de competencias
+    const textoHerramientasElem = document.getElementById('texto-herramientas');
+    if (textoHerramientasElem) {
+        textoHerramientasElem.innerHTML = `
+            <strong>Herramientas de clase:</strong> ${textoHerramientasClase}<br>
+            <strong>Herramientas de background (${background}):</strong> ${textoHerramientasBg}
+        `;
+    }
+
     const container = document.getElementById('skills-container');
     const infoDiv = document.createElement('div');
     infoDiv.className = 'puntos-restantes';
@@ -579,9 +289,8 @@ if (textoHerramientasElem) {
     `;
     container.parentNode.insertBefore(infoDiv, container);
 
-    // Generar el HTML de habilidades
+    // Generar HTML de habilidades
     let html = '';
-
     habilidadesData.forEach(habilidad => {
         const statMod = calcularModificador(stats[habilidad.stat]);
         html += `
@@ -593,16 +302,13 @@ if (textoHerramientasElem) {
             </div>
         `;
     });
-
     container.innerHTML = html;
 
-    // Actualizar total cuando se marca/desmarca un checkbox
     function actualizarTotal(habilidadRow) {
         const checkbox = habilidadRow.querySelector('.skill-check');
         const statModSpan = habilidadRow.querySelector('.stat-mod');
         const totalSpan = habilidadRow.querySelector('.skill-total');
         const statMod = parseInt(statModSpan.textContent.match(/[+-]?\d+/)[0]);
-
         if (checkbox.checked) {
             const total = statMod + bonoComp;
             totalSpan.textContent = (total >= 0 ? '+' : '') + total;
@@ -624,26 +330,19 @@ if (textoHerramientasElem) {
     const herramientasContainer = document.getElementById('herramientas-container');
     const agregarHerramientaBtn = document.getElementById('agregar-herramienta');
 
-    // Función para crear un campo de herramienta con botón eliminar
     function crearCampoHerramienta(valorInicial = '') {
         const div = document.createElement('div');
-        div.className = 'campo-dinamico'; // Ya debería tener estilos en CSS
-    
+        div.className = 'campo-dinamico';
         const input = document.createElement('input');
         input.type = 'text';
-        input.className = 'form-crear input-dinamico herramienta-input'; // Añadimos clase específica
+        input.className = 'form-crear input-dinamico herramienta-input';
         input.value = valorInicial;
         input.placeholder = 'Ej: thieves\' tools, kit de herboristería...';
-    
         const btnEliminar = document.createElement('button');
         btnEliminar.type = 'button';
-        btnEliminar.className = 'btn-eliminar-dinamico btn-herramienta-eliminar'; // Clase específica
+        btnEliminar.className = 'btn-eliminar-dinamico btn-herramienta-eliminar';
         btnEliminar.textContent = '✖';
-    
-        btnEliminar.addEventListener('click', () => {
-            div.remove();
-        });
-    
+        btnEliminar.addEventListener('click', () => div.remove());
         div.appendChild(input);
         div.appendChild(btnEliminar);
         return div;
@@ -656,50 +355,196 @@ if (textoHerramientasElem) {
     }
 
     // ============================================
+    // FUNCIONES DE BÚSQUEDA Y GESTIÓN DE INVENTARIO
+    // ============================================
+    async function buscarObjetosEnAPI(termino) {
+        const endpoints = ['weapons', 'armor', 'magicitems', 'equipment'];
+        const promesas = endpoints.map(async endpoint => {
+            try {
+                const url = `https://api.open5e.com/v1/${endpoint}/?search=${encodeURIComponent(termino)}`;
+                const resp = await fetch(url);
+                const data = await resp.json();
+                return (data.results || []).map(item => ({ ...item, tipo: endpoint }));
+            } catch {
+                return [];
+            }
+        });
+        const resultados = await Promise.all(promesas);
+        return resultados.flat();
+    }
+
+    // ============================================
+    // MODAL DE BÚSQUEDA DE EQUIPO
+    // ============================================
+    const modalEquipo = document.getElementById('modal-buscar-equipo');
+    const btnCerrarModalEquipo = document.getElementById('cerrar-modal-equipo');
+    const inputBusquedaModal = document.getElementById('input-busqueda-modal');
+    const resultadosBusquedaModal = document.getElementById('resultados-busqueda-modal');
+
+    window.abrirModalEquipo = function() {
+        if (modalEquipo) {
+            modalEquipo.classList.add('show');
+            inputBusquedaModal.value = '';
+            resultadosBusquedaModal.innerHTML = '<p>Escribe para buscar objetos...</p>';
+            inputBusquedaModal.focus();
+        }
+    };
+
+    function cerrarModalEquipo() {
+        if (modalEquipo) modalEquipo.classList.remove('show');
+    }
+
+    if (btnCerrarModalEquipo) {
+        btnCerrarModalEquipo.addEventListener('click', cerrarModalEquipo);
+    }
+
+    window.addEventListener('click', (e) => {
+        if (e.target === modalEquipo) cerrarModalEquipo();
+    });
+
+    if (inputBusquedaModal) {
+        inputBusquedaModal.addEventListener('input', async () => {
+            const termino = inputBusquedaModal.value.trim();
+            if (termino.length < 2) {
+                resultadosBusquedaModal.innerHTML = '<p>Escribe al menos 2 caracteres...</p>';
+                return;
+            }
+            resultadosBusquedaModal.innerHTML = '<p>Buscando...</p>';
+            const resultados = await buscarObjetosEnAPI(termino);
+            renderizarResultadosEnModal(resultados);
+        });
+    }
+
+    function renderizarResultadosEnModal(resultados) {
+        if (!resultados.length) {
+            resultadosBusquedaModal.innerHTML = '<p>No se encontraron objetos.</p>';
+            return;
+        }
+        let html = '';
+        resultados.forEach(obj => {
+            const objStr = JSON.stringify(obj).replace(/'/g, "&apos;").replace(/"/g, '&quot;');
+            html += `
+                <div class="herramienta-item" style="display: flex; justify-content: space-between; align-items: center;">
+                    <span><strong>${obj.name}</strong> (${obj.tipo})</span>
+                    <button type="button" class="btn-añadir-modal" data-objeto='${objStr}' style="padding: 5px 10px;">➕ Añadir</button>
+                </div>
+            `;
+        });
+        resultadosBusquedaModal.innerHTML = html;
+
+        document.querySelectorAll('.btn-añadir-modal').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const obj = JSON.parse(e.target.dataset.objeto);
+                obj.cantidad = 1;
+                inventarioCustom.push(obj);
+                renderizarInventario();
+                guardarEquipoTemporal();
+                cerrarModalEquipo();
+            });
+        });
+    }
+
+    // Renderizar inventario (versión única)
+    function renderizarInventario() {
+        const lista = document.getElementById('lista-equipo-custom');
+        if (!inventarioCustom.length) {
+            lista.innerHTML = '<p>No hay objetos en el inventario.</p>';
+            return;
+        }
+        let html = '<table style="width:100%; border-collapse:collapse;">';
+        inventarioCustom.forEach((item, index) => {
+            html += `
+                <tr>
+                    <td>${item.name} (${item.tipo || 'objeto'})</td>
+                    <td><input type="number" min="1" value="${item.cantidad}" data-index="${index}" class="input-cantidad" style="width:60px;"></td>
+                    <td><button class="btn-eliminar-item" data-index="${index}">✖</button></td>
+                </tr>
+            `;
+        });
+        html += '</table>';
+        lista.innerHTML = html;
+
+        document.querySelectorAll('.input-cantidad').forEach(input => {
+            input.addEventListener('change', (e) => {
+                const idx = e.target.dataset.index;
+                inventarioCustom[idx].cantidad = parseInt(e.target.value) || 1;
+                guardarEquipoTemporal();
+            });
+        });
+        document.querySelectorAll('.btn-eliminar-item').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const idx = e.target.dataset.index;
+                inventarioCustom.splice(idx, 1);
+                renderizarInventario();
+                guardarEquipoTemporal();
+            });
+        });
+    }
+
+    function crearObjetoCustom() {
+        const nombre = prompt('Nombre del objeto:');
+        if (!nombre) return;
+        const tipo = prompt('Tipo (weapon/armor/equipment):') || 'equipment';
+        const peso = prompt('Peso (ej: "3 lb."):') || '-';
+        const precio = prompt('Precio (ej: "10 gp"):') || '0 gp';
+        const objeto = { name: nombre, tipo: tipo, weight: peso, cost: precio, cantidad: 1 };
+        inventarioCustom.push(objeto);
+        renderizarInventario();
+        guardarEquipoTemporal();
+    }
+
+    // Botón crear objeto custom
+    const btnCrearCustom = document.getElementById('btn-crear-objeto-custom');
+    if (btnCrearCustom) btnCrearCustom.addEventListener('click', crearObjetoCustom);
+
+    // Mostrar/ocultar panel según radio
+    tipoEquipoRadios.forEach(radio => {
+        radio.addEventListener('change', () => {
+            panelCustom.style.display = (radio.value === 'custom' && radio.checked) ? 'block' : 'none';
+        });
+    });
+
+    // ============================================
     // BOTÓN "FINALIZAR"
     // ============================================
     document.getElementById('btn-finalizar').addEventListener('click', () => {
-        // Recoger competencias
         const competencias = {};
         document.querySelectorAll('.stat-row').forEach(row => {
             const habilidad = row.dataset.habilidad;
             const checkbox = row.querySelector('.skill-check');
-            competencias[habilidad] = checkbox.checked;
+            if (habilidad) competencias[habilidad] = checkbox.checked;
         });
 
-        // Recoger herramientas (guardamos el texto tal cual)
-const herramientasInputs = document.querySelectorAll('#herramientas-container .input-dinamico');
-const herramientas = [];
-herramientasInputs.forEach(input => {
-    const valor = input.value.trim();
-    if (valor) {
-        herramientas.push(valor); // Se guarda exactamente lo que el usuario escribió
-    }
-});
+        const herramientasInputs = document.querySelectorAll('#herramientas-container .input-dinamico');
+        const herramientas = [];
+        herramientasInputs.forEach(input => {
+            const valor = input.value.trim();
+            if (valor) herramientas.push(valor);
+        });
 
         const personajeCompleto = {
             ...datosPaso1,
             ...datosPaso2,
             competencias,
-            herramientas
+            herramientas,
+            equipo: inventarioCustom
         };
 
         console.log('Personaje completo:', personajeCompleto);
 
         const personaje = new Personaje(personajeCompleto);
-
         if (typeof guardarPersonaje === 'function') {
             guardarPersonaje(personaje);
         } else {
-            if (!personaje.id) {
-                personaje.id = 'pj_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-            }
+            if (!personaje.id) personaje.id = 'pj_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
             localStorage.setItem(`cefiro_${personaje.id}`, JSON.stringify(personaje.toJSON?.() || personaje));
             let personajes = JSON.parse(localStorage.getItem('cefiro_personajes') || '[]');
             personajes.push({ id: personaje.id, nombre: personaje.nombre, nivel: personaje.nivel, clase: personaje.clase });
             localStorage.setItem('cefiro_personajes', JSON.stringify(personajes));
         }
 
+        localStorage.removeItem('cefiro_equipo_temp');
         localStorage.removeItem('cefiro_paso1');
         localStorage.removeItem('cefiro_paso2');
 
