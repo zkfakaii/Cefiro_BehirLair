@@ -8,6 +8,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const datosPaso1 = JSON.parse(localStorage.getItem('cefiro_paso1') || '{}');
     const datosPaso2 = JSON.parse(localStorage.getItem('cefiro_paso2') || '{}');
 
+    // Si no hay datos del paso 2, es una creación completamente nueva: limpiar cualquier inventario residual
+if (!datosPaso2 || Object.keys(datosPaso2).length === 0) {
+    localStorage.removeItem('cefiro_equipo_temp');
+    console.log('🧹 Inventario temporal limpiado (no hay paso 2)');
+}
+
     if (!datosPaso1.stats || !datosPaso1.nivel) {
         alert('Error: faltan datos del personaje. Vuelve a empezar.');
         window.location.href = 'crear.html';
@@ -381,7 +387,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const inputBusquedaModal = document.getElementById('input-busqueda-modal');
     const resultadosBusquedaModal = document.getElementById('resultados-busqueda-modal');
 
-    window.abrirModalEquipo = function() {
+    window.abrirModalEquipo = function () {
         if (modalEquipo) {
             modalEquipo.classList.add('show');
             inputBusquedaModal.value = '';
@@ -457,29 +463,47 @@ document.addEventListener('DOMContentLoaded', () => {
             html += `
                 <tr>
                     <td>${item.name} (${item.tipo || 'objeto'})</td>
-                    <td><input type="number" min="1" value="${item.cantidad}" data-index="${index}" class="input-cantidad" style="width:60px;"></td>
-                    <td><button class="btn-eliminar-item" data-index="${index}">✖</button></td>
+                   <td>
+    <div class="cantidad-control" data-index="${index}">
+        <button type="button" class="btn-cantidad btn-menos" ${item.cantidad <= 1 ? 'disabled' : ''}>−</button>
+        <span class="cantidad-valor ${item.cantidad === 0 ? 'cantidad-cero' : ''}">${item.cantidad}</span>
+        <button type="button" class="btn-cantidad btn-mas">+</button>
+    </div>
+</td>
                 </tr>
             `;
         });
         html += '</table>';
         lista.innerHTML = html;
 
-        document.querySelectorAll('.input-cantidad').forEach(input => {
-            input.addEventListener('change', (e) => {
-                const idx = e.target.dataset.index;
-                inventarioCustom[idx].cantidad = parseInt(e.target.value) || 1;
-                guardarEquipoTemporal();
-            });
-        });
-        document.querySelectorAll('.btn-eliminar-item').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const idx = e.target.dataset.index;
-                inventarioCustom.splice(idx, 1);
-                renderizarInventario();
-                guardarEquipoTemporal();
-            });
-        });
+        // Eventos para botones de cantidad personalizados
+document.querySelectorAll('.cantidad-control').forEach(control => {
+    const idx = control.dataset.index;
+    const btnMenos = control.querySelector('.btn-menos');
+    const btnMas = control.querySelector('.btn-mas');
+    const valorSpan = control.querySelector('.cantidad-valor');
+
+    const actualizarCantidad = (nuevoValor) => {
+        if (nuevoValor >= 0) {
+            inventarioCustom[idx].cantidad = nuevoValor;
+            valorSpan.textContent = nuevoValor;
+            btnMenos.disabled = (nuevoValor <= 0);
+            guardarEquipoTemporal();
+        }
+    };
+
+    btnMas.addEventListener('click', (e) => {
+        e.preventDefault();
+        const nuevo = (inventarioCustom[idx].cantidad || 1) + 1;
+        actualizarCantidad(nuevo);
+    });
+
+    btnMenos.addEventListener('click', (e) => {
+        e.preventDefault();
+        const nuevo = (inventarioCustom[idx].cantidad || 1) - 1;
+        actualizarCantidad(nuevo);
+    });
+});
     }
 
     function crearObjetoCustom() {

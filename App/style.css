@@ -1578,7 +1578,7 @@ td {
     min-width: 40px;
 }
 
-/* buscar objeto */
+ buscar objeto */
 
 #buscar-objeto {
     cursor: pointer;
@@ -1588,4 +1588,207 @@ td {
     outline: none;
     border-color: #d48b4a;
     box-shadow: inset 3px 3px 8px rgba(0,0,0,0.2), 0 0 0 3px rgba(212, 139, 74, 0.3);
+}
+
+
+
+
+
+
+
+
+
+/* tabla inventario
+
+/* ============================================
+   TABLA DE INVENTARIO (PASO 3) - MARCO EN CONTENEDOR
+   ============================================ */
+#lista-equipo-custom {
+    margin-top: 10px;
+    margin-bottom: 15px;
+    background-color: #E6AB45;              /* Fondo pergamino */
+    border: 2px solid #33260f;              /* Marco idéntico a .herramienta-item */
+    border-radius: 15px;                    /* Mismo radio que .herramienta-item */
+    overflow: hidden;                       /* Respeta el border-radius */
+    box-shadow: inset 0 0 5px rgba(0,0,0,0.1), 0 4px 6px rgba(0,0,0,0.2);
+}
+
+#lista-equipo-custom table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: transparent !important; /* El fondo lo da el contenedor */
+    border: none !important;                 /* Sin borde propio */
+    font-family: 'IM Fell English', serif;
+    color: #2a1e0f;
+}
+
+#lista-equipo-custom td,
+#lista-equipo-custom th {
+    background-color: transparent !important;
+    padding: 8px 10px;
+    border-bottom: 1px solid #b3541c;       /* Línea divisoria entre filas */
+    vertical-align: middle;
+    text-align: left;
+    color: #2a1e0f;
+}
+
+#lista-equipo-custom tr:last-child td {
+    border-bottom: none;                    /* Última fila sin línea */
+}
+
+#lista-equipo-custom .input-cantidad {
+    width: 65px !important;
+    padding: 5px 0 !important;
+    text-align: center;
+    background-color: #f0b85c !important;
+    border: 2px solid #33260f !important;
+    border-radius: 20px !important;
+    color: #000000 !important;
+    font-size: 1em !important;
+    font-weight: bold;
+    box-shadow: inset 2px 2px 4px rgba(0,0,0,0.1);
+    transition: all 0.2s;
+}
+
+#lista-equipo-custom .input-cantidad:focus {
+    outline: none;
+    border-color: #d48b4a !important;
+    background-color: #ffcf8a !important;
+}
+
+#lista-equipo-custom .btn-eliminar-item {
+    background: linear-gradient(135deg, #b3541c 0%, #7a3a1a 100%);
+    color: #F0D8A0;
+    border: 2px solid #33260f;
+    border-radius: 20px;
+    padding: 5px 12px;
+    font-size: 1.1em;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 3px 0 #3a2a1a;
+    transition: all 0.1s;
+    line-height: 1;
+}
+
+#lista-equipo-custom .btn-eliminar-item:hover {
+    background: linear-gradient(135deg, #c4642a 0%, #8a4a2a 100%);
+    border-color: #f0b85c;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 0 #3a2a1a;
+}
+
+#lista-equipo-custom .btn-eliminar-item:active {
+    transform: translateY(3px);
+    box-shadow: 0 0 0 #3a2a1a;
+}
+
+/* Mensaje de inventario vacío (se muestra dentro del contenedor) */
+#lista-equipo-custom p {
+    background-color: transparent;
+    border: none;
+    padding: 10px 15px;
+    text-align: center;
+    color: #552006;
+    font-style: italic;
+    margin: 0;
+}
+
+@media (max-width: 500px) {
+    #lista-equipo-custom td {
+        padding: 6px 4px;
+        font-size: 0.9em;
+    }
+    #lista-equipo-custom .input-cantidad {
+        width: 50px !important;
+    }
+    #lista-equipo-custom .btn-eliminar-item {
+        padding: 4px 8px;
+    }
+}
+
+/* ============================================
+   CONTROL DE CANTIDAD PERSONALIZADO (MÓVIL)
+   ============================================ */
+.cantidad-control {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.btn-cantidad {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    min-height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #c4642a 0%, #330101 100%);
+    color: #F0D8A0;
+    border: 2px solid #E6AB45;
+    font-size: 1.5em;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 3px 0 #3a2a1a;
+    transition: all 0.1s;
+    line-height: 1;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.btn-cantidad:hover {
+    background: linear-gradient(135deg, #7236ff 0%, #9c0505 100%);
+    border-color: #f0b85c;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 0 #3a2a1a;
+}
+
+.btn-cantidad:active {
+    transform: translateY(3px);
+    box-shadow: 0 0 0 #3a2a1a;
+}
+
+.btn-cantidad:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: 0 3px 0 #3a2a1a;
+}
+
+.cantidad-valor {
+    min-width: 30px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 1.2em;
+    color: #2a1e0f;
+    background: #f0b85c;
+    padding: 4px 8px;
+    border-radius: 20px;
+    border: 1px solid #33260f;
+    box-shadow: inset 1px 1px 3px rgba(0,0,0,0.1);
+}
+
+/* Ajuste responsivo para móviles (botones más grandes) */
+@media (max-width: 600px) {
+    .btn-cantidad {
+        width: 44px;
+        height: 44px;
+        min-width: 44px;
+        min-height: 44px;
+        font-size: 1.8em;
+    }
+    .cantidad-valor {
+        min-width: 40px;
+        font-size: 1.3em;
+        padding: 6px 10px;
+    }
+}
+
+.cantidad-valor.cantidad-cero {
+    opacity: 0.6;
+    background-color: #c0a070;
+    color: #4a2a1a;
+    text-decoration: line-through;
 }

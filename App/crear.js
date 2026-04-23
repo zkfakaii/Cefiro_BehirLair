@@ -4,6 +4,15 @@
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('🆕 Pantalla de creación');
 
+    // Si no hay datos del paso 1, es una creación nueva: limpiar equipo temporal
+// Si no hay datos del paso 1, es una creación nueva: limpiar equipo temporal
+if (!localStorage.getItem('cefiro_paso1')) {
+    localStorage.removeItem('cefiro_equipo_temp');
+    console.log('🧹 Equipo temporal limpiado para nueva creación');
+} else {
+    console.log('📋 Continuando creación existente, equipo temporal conservado');
+}
+
     const razaSelect = document.getElementById('raza');
     const claseSelect = document.getElementById('clase');
     const subclaseSelect = document.getElementById('subclase');

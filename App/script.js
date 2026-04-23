@@ -29,8 +29,16 @@ function inicializarInicio() {
     });
 
     if (btnNuevo) {
-        btnNuevo.addEventListener('click', () => window.location.href = 'crear.html');
-    }
+    btnNuevo.addEventListener('click', () => {
+        // Limpiar TODOS los datos temporales de creación
+        localStorage.removeItem('cefiro_paso1');
+        localStorage.removeItem('cefiro_paso2');
+        localStorage.removeItem('cefiro_equipo_temp');
+        console.log('🧹 Datos de creación limpiados para nueva ficha');
+          console.log('✅ Datos limpiados. Redirigiendo a crear.html');
+        window.location.href = 'crear.html';
+    });
+}
 
     if (btnImportar) {
         btnImportar.addEventListener('click', importarPersonaje);
